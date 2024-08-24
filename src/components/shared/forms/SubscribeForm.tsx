@@ -70,7 +70,7 @@ export function SubscribeForm() {
         <Input
           className="text-lg"
           type="text"
-          placeholder="Nome completo"
+          placeholder="Nome Completo"
           {...register("name")}
         />
         <Input
