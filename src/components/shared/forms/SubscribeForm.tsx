@@ -24,7 +24,7 @@ export function SubscribeForm() {
     handleSubmit,
     register,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SubscribeFormSchema>({
     resolver: zodResolver(subscribeFormSchema),
   });

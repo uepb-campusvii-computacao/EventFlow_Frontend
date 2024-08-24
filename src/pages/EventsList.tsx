@@ -3,10 +3,9 @@ import { Header } from "@/components/shared/Header";
 import { Input } from "@/components/ui/input";
 import { events_data } from "@/lib/constants";
 import { Search } from "lucide-react";
-import { useState } from "react";
 
 export function EventsList() {
-  const [searchKey, setSearchKey] = useState("");
+  //const [searchKey, setSearchKey] = useState("");
   const events = events_data;
 
   return (
@@ -17,7 +16,7 @@ export function EventsList() {
           <Input
             type="text"
             placeholder="Pesquise o evento"
-            onChange={(e) => setSearchKey(e.target.value)}
+            //onChange={(e) => setSearchKey(e.target.value)}
             className="pr-12 focus:!ring-purple-500"
           />
           <Search className="absolute right-4" />
