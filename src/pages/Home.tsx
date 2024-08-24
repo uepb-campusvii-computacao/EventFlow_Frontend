@@ -11,7 +11,7 @@ export function Home() {
               Simplificando cada etapa do seu evento
             </h1>
             <p className="text-xl font-light max-md:mt-4 max-sm:text-lg">
-              Bem-vindos ao eventflow! Nós somos uma startup dedicada a
+              Bem-vindos ao eventflow. Nós somos uma startup dedicada a
               transformar a maneira como eventos acadêmicos e corporativos são
               planejados e executados.
             </p>
