@@ -74,4 +74,20 @@
   .button-secondary{
     @apply rounded-lg border border-purple-500 bg-white px-3 py-2 text-center text-lg font-semibold text-purple-500 shadow-md transition-colors hover:bg-accent;
   }
+
+  .payment-approved{
+    @apply rounded-md bg-green-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  }
+
+  .payment-pending{
+    @apply rounded-md bg-orange-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  }
+
+  .payment-expired{
+    @apply rounded-md bg-red-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  }
+
+  .payment-free{
+    @apply rounded-md bg-gray-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  }
 }

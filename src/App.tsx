@@ -14,7 +14,7 @@ export default function App() {
         <Route path="/eventos" element={<EventsList />} />
         <Route path="/eventos/:slug" element={<Event />} />
         <Route path="/eventos/:slug/inscricao" element={<Subscribe />} />
-        <Route path="/pagamento/:id" element={<Payment />} />
+        <Route path="/pagamento/:batch_id/usuario/:user_id" element={<Payment />} />
       </Routes>
     </BrowserRouter>
   );
