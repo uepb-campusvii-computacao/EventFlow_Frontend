@@ -32,7 +32,6 @@ export function EventsList() {
                   slug={String(item.slug)}
                   name={item.nome}
                   image_url={item.banner_img_url || ''}
-                  date={item.date}
                 />
               ))}
           </div>
