@@ -2,6 +2,8 @@ export type Event = {
   uuid_evento: string;
   uuid_user_owner: string;
   nome: string;
+  slug: string;
+  date: string;
   banner_img_url?: string;
 };
 

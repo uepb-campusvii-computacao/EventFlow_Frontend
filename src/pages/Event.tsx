@@ -1,4 +1,4 @@
-import { Container } from "@/components/shared/container";
+import { Container } from "@/components/shared/Container";
 import { Header } from "@/components/shared/Header";
 import { Link, useParams } from "react-router-dom";
 

@@ -71,7 +71,7 @@ export function PaymentVoucher() {
             </p>
             <a
               className="mt-2 text-center rounded-full bg-green-500 px-4 py-2 text-xl font-medium text-white"
-              href={`https://wa.me/558399079925?text=${encodeURIComponent(`Olá! Gostaria de enviar o comprovante de inscrição para o SEMAD referente ao inscrito: ${data?.user_name}, de email: ${data?.email}`)}`}
+              href={`https://wa.me/${import.meta.env.VITE_PHONE}?text=${encodeURIComponent(`Olá! Gostaria de enviar o comprovante de inscrição para o SEMAD referente ao inscrito: ${data?.user_name}, de email: ${data?.email}`)}`}
             >
               Enviar Comprovante
             </a>

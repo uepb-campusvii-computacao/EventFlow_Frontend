@@ -1,14 +1,13 @@
-import { Container } from "@/components/shared/container";
-import { Header } from "@/components/shared/Header";
+import { Container } from '@/components/shared/Container';
+import { Header } from '@/components/shared/Header';
 
 export function Home() {
-  //remover 
+  //remover
   return (
     <>
       <Header />
-
-      <main className="flex min-h-screen flex-col">
-        <section className="flex w-full items-center bg-accent">
+      <main className="flex h-full flex-col">
+        <section className="flex w-full min-h-[80vh] items-center bg-accent">
           <Container className="flex gap-8 sm:gap:4 py-28 flex-col-reverse items-center sm:flex-row">
             <div className="w-full sm:w-[70%]">
               <h1 className="sm:text-7xl font-bold max-sm:text-4xl max-sm:text-center pb-4">

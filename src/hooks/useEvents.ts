@@ -12,6 +12,24 @@ async function fetchEventsData(): Promise<Event[]> {
   }
 }
 
+function getEventBySlug(
+  queryClient: ReturnType<typeof useQueryClient>,
+  slug: string
+): Event | undefined {
+  try {
+    const events = queryClient.getQueryData<Event[]>(['events-data']);
+
+    if (!events) {
+      return undefined;
+    }
+
+    return events.find((event) => event.slug === slug);
+  } catch (error) {
+    console.error('Error searching events:', error);
+    throw new Error('Error searching events');
+  }
+}
+
 function searchEvent(
   queryClient: ReturnType<typeof useQueryClient>,
   query: string
@@ -45,8 +63,13 @@ export function useEvents(query?: string) {
     ? searchEvent(queryClient, query || '')
     : [];
 
+  const findEvent = isSearching
+  ? getEventBySlug(queryClient, query || '')
+  : undefined;
+
   return {
     eventsQuery,
+    findEvent,
     searchedEvents,
     isSearching,
   };
