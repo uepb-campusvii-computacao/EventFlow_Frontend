@@ -1,12 +1,12 @@
 import { EventCard } from "@/components/shared/events/EventCard";
 import { Header } from "@/components/shared/Header";
 import { Input } from "@/components/ui/input";
-import { events_data } from "@/lib/constants";
+import { useEvents } from "@/hooks/useEvents";
 import { Search } from "lucide-react";
 
 export function EventsList() {
   //const [searchKey, setSearchKey] = useState("");
-  const events = events_data;
+  const { eventsQuery } = useEvents();
 
   return (
     <>
@@ -22,14 +22,12 @@ export function EventsList() {
           <Search className="absolute right-4" />
         </div>
         <div className="grid grid-cols-4 place-items-center justify-between gap-12 py-8 max-[820px]:grid-cols-2 max-sm:grid-cols-1">
-          {events.map((item) => (
+          { eventsQuery.data && eventsQuery?.data.map((item) => (
             <EventCard
-              key={item.id}
-              slug={String(item.id)}
-              name={item.name}
-              location={item.location}
-              image_url={item.image_url}
-              date={item.date}
+              key={item.uuid_evento}
+              slug={String(item.uuid_evento)}
+              name={item.nome}
+              image_url={item.banner_img_url || ""}
             />
           ))}
         </div>

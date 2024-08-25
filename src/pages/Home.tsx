@@ -1,7 +1,7 @@
 import { Header } from "@/components/shared/Header";
 
 export function Home() {
-  //remover comnetario
+  //remover 
   return (
     <>
       <Header />

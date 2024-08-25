@@ -5,16 +5,16 @@ interface EventCardProps {
   slug: string;
   name: string;
   image_url: string;
-  date: string;
-  location: string;
+  date?: string;
+  location?: string;
 }
 
 export function EventCard({
   slug,
   name,
   image_url,
-  date,
-  location,
+  date = "",
+  location = "",
 }: EventCardProps) {
   return (
     <Link

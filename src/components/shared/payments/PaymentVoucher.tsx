@@ -1,56 +1,81 @@
-import { Files } from "lucide-react";
+import { usePaymentInformation } from '@/hooks/usePaymentInformation';
+import { useParams } from 'react-router-dom';
 
 export function PaymentVoucher() {
+  const { batch_id, user_id } = useParams<{
+    batch_id: string;
+    user_id: string;
+  }>();
+
+  const { data } = usePaymentInformation({
+    batch_id: batch_id!,
+    user_id: user_id!,
+  });
+
+  const statusClassMap: { [key: string]: string } = {
+    APROVADO: 'payment-approved',
+    PENDENTE: 'payment-pending',
+    GRATUITO: 'payment-free',
+    EXPIRADO: 'payment-expired',
+  };
+
   return (
     <div className="flex w-full flex-col items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md sm:w-[60%]">
       <h1 className="text-center text-3xl font-semibold">
         Comprovante de inscricao para o evento: <br /> <b>VI SEMAD</b>
       </h1>
-      <div className="flex flex-col justify-around gap-4 sm:flex-row sm:gap-16">
-        <div className="flex flex-1 flex-col justify-center gap-2 text-lg">
-          <span className="text-left">
-            <b>Nome: </b> Yuri Monteiro
+      <div className="flex flex-col justify-around gap-4 font-light">
+        <span className="text-pretty text-xl">
+          <b>Nome: </b> {data?.user_name}
+        </span>
+        <span className="text-pretty text-xl">
+          {' '}
+          <b>E-mail:</b> {data?.email}
+        </span>
+
+        <span className="text-pretty text-xl">
+          {' '}
+          <b>Status do pagamento:</b>{' '}
+          <span
+            className={statusClassMap[data?.inscricao.status || 'PENDENTE']}
+          >
+            {data?.inscricao.status}
           </span>
-          <span className="text-left">
-            {" "}
-            <b>E-mail:</b> yuri@gmail.com
-          </span>
-          <span className="text-left">
-            {" "}
-            <b>Telefone:</b> 83 99991-8888
-          </span>
-          <span className="text-left">
-            {" "}
-            <b>Instiuição:</b> UEPB
-          </span>
-          <span className="text-left">
-            {" "}
-            <b>Status do pagamento:</b>{" "}
-            <span className="rounded-md bg-green-500 p-1 font-mono text-sm font-semibold uppercase text-white">
-              REALIZADO
-            </span>
-          </span>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <h1 className="text-xl font-medium">Total: 900,00R$</h1>
-          <img
-            className="h-[200px] w-[200px]"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuIy6HNc3zXzJ9-y-rNEfnaSdhcgeXytmnQg&s"
-            alt="qr code"
-          />
-          <button className="button-primary flex items-center gap-2">
-            {" "}
-            <Files /> copiar e colar
-          </button>
+        </span>
+        <div className="my-4">
+          <h1 className="text-2xl text-center text-pretty font-medium">
+            Total:{' '}
+            {data?.inscricao.preco.toLocaleString('pt-BR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}{' '}
+            R$
+          </h1>
+
+          <h2 className="text-center text-lg font-light">
+            {data?.inscricao.nome_lote}
+          </h2>
         </div>
       </div>
-      <div className="w-[80%]">
-        <h1 className="text-center text-lg font-bold text-red-500">Atenção</h1>
-        <p className="text-center text-base font-light">
-          Pagamento com dinheiro físico ou cartão devem ser realizados na
-          coordenação do curso em até 3 dias antes do evento
-        </p>
-      </div>
+      {data?.inscricao.status !== 'GRATUITO' &&
+        data?.inscricao.status !== 'REALIZADO' && (
+          <div className="w-[80%] flex flex-col gap-2 items-center">
+            <h1 className="text-center text-lg font-bold text-red-500">
+              Atenção
+            </h1>
+            <p className="text-center text-base font-light">
+              Notamos que foi realizado a inscricao mas nao foi realizado o
+              pagamento, caso já tenha efetuado o pagamento nos envie o
+              comprovante
+            </p>
+            <a
+              className="mt-2 text-center rounded-full bg-green-500 px-4 py-2 text-xl font-medium text-white"
+              href={`https://wa.me/558399079925?text=${encodeURIComponent(`Olá! Gostaria de enviar o comprovante de inscrição para o SEMAD referente ao inscrito: ${data?.user_name}, de email: ${data?.email}`)}`}
+            >
+              Enviar Comprovante
+            </a>
+          </div>
+        )}
     </div>
   );
 }
