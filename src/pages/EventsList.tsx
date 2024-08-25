@@ -23,7 +23,7 @@ export function EventsList() {
             />
             <Search className="absolute right-4" />
           </div>
-          <div className="grid grid-cols-4 place-items-center justify-between gap-10 py-8 max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-sm:grid-cols-1">
+          <div className="grid grid-cols-4 place-items-center justify-between gap-4 py-8 max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-sm:grid-cols-1">
             {events.map((item) => (
               <EventCard
                 key={item.id}
