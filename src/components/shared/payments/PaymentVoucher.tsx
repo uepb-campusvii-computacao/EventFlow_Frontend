@@ -2,7 +2,7 @@ import { Files } from "lucide-react";
 
 export function PaymentVoucher() {
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md sm:w-[60%]">
+    <div className="flex w-fit flex-col h-fit items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md">
       <h1 className="text-center text-3xl font-semibold">
         Comprovante de inscricao para o evento: <br /> <b>VI SEMAD</b>
       </h1>
@@ -12,20 +12,16 @@ export function PaymentVoucher() {
             <b>Nome: </b> Yuri Monteiro
           </span>
           <span className="text-left">
-            {" "}
             <b>E-mail:</b> yuri@gmail.com
           </span>
           <span className="text-left">
-            {" "}
             <b>Telefone:</b> 83 99991-8888
           </span>
           <span className="text-left">
-            {" "}
             <b>Instiuição:</b> UEPB
           </span>
           <span className="text-left">
-            {" "}
-            <b>Status do pagamento:</b>{" "}
+            <b>Status do pagamento:</b>
             <span className="rounded-md bg-green-500 p-1 font-mono text-sm font-semibold uppercase text-white">
               REALIZADO
             </span>
@@ -39,7 +35,6 @@ export function PaymentVoucher() {
             alt="qr code"
           />
           <button className="button-primary flex items-center gap-2">
-            {" "}
             <Files /> copiar e colar
           </button>
         </div>
