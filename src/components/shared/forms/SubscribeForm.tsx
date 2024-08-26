@@ -5,10 +5,10 @@ import { api } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { SearchPayment } from '../payments/SearchPayment';
-import toast from 'react-hot-toast';
 import { SkeletonLoader } from '../skeletonLoader';
 
 const subscribeFormSchema = z.object({
@@ -66,12 +66,12 @@ export function SubscribeForm() {
   }
 
   return (
-    <div className='flex flex-col items-end sm:w-[60%]'>
+    <div className="flex flex-col items-center w-full gap-2">
       <form
-        className="flex w-full mx-auto flex-col items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md"
+        className="flex w-full mx-auto flex-col items-center justify-between gap-4"
         onSubmit={handleSubmit(handleRegisterSubscriberInEvent)}
       >
-        <h1 className="mx-4 text-2xl font-medium">Escolha o lote</h1>
+        <h1 className="mx-4 text-2xl font-semibold">Escolha o lote</h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 w-full">
           {isBatchsLoading ? (
             <SkeletonLoader amount={3} className="h-48" />

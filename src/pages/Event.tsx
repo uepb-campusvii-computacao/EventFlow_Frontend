@@ -1,9 +1,8 @@
-import { Container } from "@/components/shared/Container";
-import { Header } from "@/components/shared/Header";
-import { Link, useParams } from "react-router-dom";
+import { Container } from '@/components/shared/Container';
+import { SubscribeForm } from '@/components/shared/forms/SubscribeForm';
+import { Header } from '@/components/shared/Header';
 
 export function Event() {
-  const { slug } = useParams<{ slug: string }>();
 
   return (
     <>
@@ -16,32 +15,41 @@ export function Event() {
             width={160}
           />
           <div className="rounded-md border-2 bg-white p-8 shadow-md">
-            <h1 className="text-center text-3xl font-semibold">
-              IX Seminário Internacional de Habilidades Sociais
+            <h1 className="text-center text-2xl font-semibold">
+              IV Semana da Administração SEMAD 2024
             </h1>
-            <h3 className="text-center text-sm font-medium">
-              I Congresso de Internacional de Relações Interpessoais e
-              Habilidades Sociais
-            </h3>
-            <p className="my-3 text-xl">
-              É com grande entusiasmo que anunciamos o 9º Seminário
-              Internacional de Habilidades Sociais (SIHS) e o 1º Congresso
-              Internacional de Relações Interpessoais e Habilidades Sociais, que
-              acontecerá de 25 a 27 de setembro de 2024 na cidade de João
-              Pessoa, Paraíba.
+
+            <p className="my-3 text-lg font-light">
+              É com grande entusiasmo que anunciamos a 4ª Semana da
+              Administração, que acontecerá de 11 a 13 de setembro de 2024 no
+              Campus VII da UEPB na cidade de Patos, Paraíba.
             </p>
-            <h2 className="text-2xl font-semibold">Sobre o evento</h2>
-            <p className="my-3 text-xl">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Asperiores
-              <strong> error corporis </strong>dicta ad id nam quis eveniet
-              placeat obcaecati, nesciunt alias officiis quam non omnis
-              explicabo recusandae officia natus illo?
+            <h2 className="text-xl font-semibold">Sobre o evento</h2>
+            <p className="my-3 text-lg font-light">
+              Em um mundo onde a evolução tecnológica avança a passos largos, o
+              mercado de trabalho não permanece estático. Esse fluxo contínuo de
+              mudanças resignifica o conceito de trabalho e desafia
+              profissionais a adaptarem-se constantemente. É neste contexto, que
+              a 4ª Semana da Administração vem discutir sobre <b>GESTÃO DE
+              CARREIRA, INOVAÇÃO E MERCADO </b> buscando trabalhar o <b>MINDSET</b> de
+              crescimento: aprender sempre, se desenvolver tecnicamente e
+              evoluir aperfeiçoando suas habilidades não importando sua área de
+              atuação.
             </p>
           </div>
-          <Link to={`/eventos/${slug}/inscricao`} className="button-primary">
+          <div className="w-full px-8 rounded-md border-2 bg-white p-8 shadow-md flex flex-col-reverse gap-4 sm:gap-16 sm:flex-row">
+            <SubscribeForm />
+
+            <img
+              className="h-[280px] sm:h-[400px] w-auto my-auto mx-auto"
+              src="https://img.freepik.com/vetores-gratis/prancheta-estilo-cartoon-3d-com-icone-de-documento-suporte-de-papel-realista-com-ilustracao-vetorial-plana-de-contrato-ou-acordo-gestao-informacao-conceito-de-atribuicao_778687-986.jpg?t=st=1724694837~exp=1724698437~hmac=6dac47bed6d824b3bb02d2bceac2ea613a1fe452cf10d3674fbf32b7f7dc9342&w=740"
+              alt="eventflow"
+            />
+          </div>
+
+          {/* <Link to={`/eventos/${slug}/inscricao`} className="button-primary">
             Inscreva-se
-          </Link>
+          </Link> */}
         </main>
       </Container>
     </>

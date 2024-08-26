@@ -1,8 +1,11 @@
+import sponsor1 from '@/assets/sponsor-1.webp';
+import sponsor2 from '@/assets/sponsor-2.webp';
+import sponsor3 from '@/assets/sponsor-3.webp';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
 
 export function Home() {
-  //remover
+  
   return (
     <>
       <Header />
@@ -31,26 +34,20 @@ export function Home() {
           </Container>
         </section>
 
-        <div className="flex h-24 items-center justify-around bg-purple-400">
+        <div className="flex h-24 items-center justify-around bg-purple-700">
           <img
-            width={64}
-            height={64}
-            className="h-12 w-auto"
-            src="/vite.svg"
+            className="h-20 w-auto"
+            src={sponsor1}
             alt=""
           />
           <img
-            width={64}
-            height={64}
-            className="h-12 w-auto"
-            src="/vite.svg"
+            className="h-16 w-auto"
+            src={sponsor2}
             alt=""
           />
           <img
-            width={64}
-            height={64}
-            className="h-12 w-auto"
-            src="/vite.svg"
+            className="h-16 w-auto"
+            src={sponsor3}
             alt=""
           />
         </div>
@@ -97,7 +94,7 @@ export function Home() {
             <div className="flex flex-1 flex-col gap-4">
               <h1 className="text-center text-6xl font-bold max-sm:text-4xl">
                 Porque escolher o{' '}
-                <strong className="text-purple-400">eventflow</strong>
+                <strong className="text-purple-700">eventflow</strong>
               </h1>
               <p className="text-xl font-light max-md:mt-4 max-sm:text-lg">
                 Bem-vindos ao eventflow! Nós somos uma startup dedicada a

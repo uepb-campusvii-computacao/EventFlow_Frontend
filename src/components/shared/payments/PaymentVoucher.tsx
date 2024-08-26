@@ -22,7 +22,7 @@ export function PaymentVoucher() {
   return (
     <div className="flex w-fit flex-col h-fit items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md">
       <h1 className="text-center text-3xl font-semibold">
-        Comprovante de inscricao para o evento: <br /> <b>VI SEMAD</b>
+        Comprovante de inscrição
       </h1>
 
       <div className="flex flex-col justify-around gap-4 font-light">
