@@ -40,7 +40,7 @@ export function Event() {
             </p>
           </div>
           <Link to={`/eventos/${slug}/inscricao`} className="button-primary">
-            Increva-se
+            Inscreva-se
           </Link>
         </main>
       </Container>

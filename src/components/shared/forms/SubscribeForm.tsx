@@ -8,13 +8,15 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { SearchPayment } from '../payments/SearchPayment';
+import toast from 'react-hot-toast';
+import { SkeletonLoader } from '../skeletonLoader';
 
 const subscribeFormSchema = z.object({
-  batch_id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  college: z.string(),
-  name_tag: z.string(),
+  batch_id: z.string().min(1, 'Lote é um campo obrigatório'),
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
+  college: z.string().min(1, 'Instituição é obrigatória'),
+  name_tag: z.string().min(1, 'Nome no crachá é obrigatório'),
 });
 
 type SubscribeFormSchema = z.infer<typeof subscribeFormSchema>;
@@ -23,23 +25,28 @@ export function SubscribeForm() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { findEvent } = useEvents(slug);
-
-  const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
+  const { data: batchs, isLoading: isBatchsLoading } = useEventBatchs(
+    findEvent?.uuid_evento || ''
+  );
   const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
+
   const {
     handleSubmit,
     register,
+    trigger,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting: isFormSubmitting },
   } = useForm<SubscribeFormSchema>({
     resolver: zodResolver(subscribeFormSchema),
   });
 
   async function handleRegisterSubscriberInEvent(data: SubscribeFormSchema) {
-    console.log(data);
-    try {
-      const lote_id = data.batch_id ?? (batchs?.[0]?.uuid_lote);
+    if (!data.batch_id) {
+      return toast.error('Lote é um campo obrigatório');
+    }
 
+    try {
+      const lote_id = data.batch_id ?? batchs?.[0]?.uuid_lote;
       const response = await api.post(`/register/${slug}`, {
         nome: data.name,
         email: data.email,
@@ -48,10 +55,11 @@ export function SubscribeForm() {
         lote_id,
       });
 
-      navigate(
-        `/pagamento/${data.batch_id}/usuario/${response.data.uuid_user}`
-      );
-    } catch (error) {
+      navigate(`/pagamento/${lote_id}/usuario/${response.data.uuid_user}`);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data || 'Ocorreu um erro ao registrar o usuário';
+      toast.error(errorMessage);
       console.log(error);
     }
   }
@@ -62,87 +70,122 @@ export function SubscribeForm() {
   }
 
   return (
-    <form
-      className="flex w-full flex-col items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md sm:w-[60%]"
-      onSubmit={handleSubmit(handleRegisterSubscriberInEvent)}
-    >
-      <h1 className="mx-4 text-2xl font-medium">Escolha o lote</h1>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {batchs &&
-          batchs.map((item) => (
-            <div
-              key={item.uuid_lote}
-              className={`flex w-full cursor-pointer flex-col rounded-md border-2 p-8 shadow-md ${
-                selectedBatch === item.uuid_lote
-                  ? 'border-blue-500'
-                  : 'border-accent'
-              }`}
-              onClick={() => handleBatchClick(item.uuid_lote)}
-            >
-              <strong className="text-lg font-medium">{item.nome}</strong>
-              <p className="font-light">{item.descricao}</p>
-              <span className="mt-2 font-mono text-base">
-                R${' '}
-                {item.preco.toLocaleString('pt-BR', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-          ))}
-        <input required type="hidden" {...register('batch_id')} />
+    <div className='flex flex-col items-end sm:w-[60%]'>
+      <form
+        className="flex w-full mx-auto flex-col items-center justify-between gap-4 rounded-md border-2 bg-white p-8 shadow-md"
+        onSubmit={handleSubmit(handleRegisterSubscriberInEvent)}
+      >
+        <h1 className="mx-4 text-2xl font-medium">Escolha o lote</h1>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 w-full">
+          {isBatchsLoading ? (
+            <SkeletonLoader amount={3} className="h-48" />
+          ) : (
+            batchs &&
+            batchs.map((item) => (
+              <div
+                key={item.uuid_lote}
+                className={`flex w-full cursor-pointer flex-col rounded-md border-2 p-8 shadow-md ${
+                  selectedBatch === item.uuid_lote
+                    ? 'border-blue-500'
+                    : 'border-accent'
+                }`}
+                onClick={() => {
+                  handleBatchClick(item.uuid_lote);
+                  trigger('batch_id');
+                }}
+              >
+                <strong className="text-lg font-medium">{item.nome}</strong>
+                <p className="font-light">{item.descricao}</p>
+                <span className="mt-2 font-mono text-base">
+                  R${' '}
+                  {item.preco.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+            ))
+          )}
+          <input required type="hidden" {...register('batch_id')} />
+        </div>
         {errors.batch_id && (
-          <p className="text-red-500">{errors.batch_id.message}</p>
+          <p className="text-red-500 font-semibold">
+            {errors.batch_id.message}
+          </p>
         )}
-      </div>
-      <h1 className="text-2xl font-medium">Preencha seus dados</h1>
-      <div className="grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
-        <Input
-          required
-          className="text-lg"
-          type="text"
-          placeholder="Nome Completo"
-          {...register('name')}
-        />
-        <Input
-          required
-          className="text-lg"
-          type="email"
-          placeholder="Email"
-          {...register('email')}
-        />
-      </div>
+        <h1 className="text-2xl font-medium">Preencha seus dados</h1>
+        <div className="grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
+          <div className="w-full">
+            <Input
+              className={`text-lg ${errors.name && 'border-2 border-red-500'}`}
+              placeholder="Nome Completo"
+              {...register('name')}
+              onBlur={() => trigger('name')}
+            />
+            {errors.name && (
+              <p className="text-red-500 font-semibold">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
+          <div className="w-full">
+            <Input
+              className={`text-lg ${errors.email && 'border-2 border-red-500'}`}
+              placeholder="Email"
+              {...register('email')}
+              onBlur={() => trigger('email')}
+            />
+            {errors.email && (
+              <p className="text-red-500 font-semibold">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+        </div>
 
-      <div className="grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
-        <Input
-          required
-          className="text-lg"
-          type="text"
-          placeholder="Instituição"
-          {...register('college')}
-        />
-        <Input
-          required
-          className="text-lg"
-          type="text"
-          placeholder="Nome no crachá"
-          {...register('name_tag')}
-        />
-      </div>
+        <div className="grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
+          <div className="w-full">
+            <Input
+              className={`text-lg ${errors.college && 'border-2 border-red-500'}`}
+              placeholder="Instituição"
+              {...register('college')}
+              onBlur={() => trigger('college')}
+            />
+            {errors.college && (
+              <p className="text-red-500 font-semibold">
+                {errors.college.message}
+              </p>
+            )}
+          </div>
+          <div className="w-full">
+            <Input
+              className={`text-lg ${errors.name_tag && 'border-2 border-red-500'}`}
+              placeholder="Nome no crachá"
+              {...register('name_tag')}
+              onBlur={() => trigger('name_tag')}
+            />
+            {errors.name_tag && (
+              <p className="text-red-500 font-semibold">
+                {errors.name_tag.message}
+              </p>
+            )}
+          </div>
+        </div>
 
-      <div className="mt-4 grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
-        <Link to={`/eventos/${slug}`} className="button-secondary">
-          Voltar
-        </Link>
-        <button
-          disabled={isSubmitting}
-          type="submit"
-          className="button-primary disabled:opacity-70 transition-opacity"
-        >
-          Inscreve-se
-        </button>
-      </div>
+        <div className="mt-4 grid w-full grid-cols-2 gap-2 max-sm:grid-cols-1">
+          <Link to={`/eventos/${slug}`} className="button-secondary">
+            Voltar
+          </Link>
+          <button
+            disabled={isFormSubmitting}
+            type="submit"
+            className={`button-primary disabled:opacity-70 transition-opacity ${isFormSubmitting && 'animate-pulse'}`}
+          >
+            {isFormSubmitting ? 'Carregando...' : 'Inscreva-se'}
+          </button>
+        </div>
+      </form>
       <SearchPayment />
-    </form>
+    </div>
   );
 }

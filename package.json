@@ -14,6 +14,7 @@
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@tanstack/react-query": "^5.52.1",
+    "@tanstack/react-query-devtools": "^5.52.1",
     "axios": "^1.7.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -21,9 +22,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.26.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "web": "file:",
     "zod": "^3.23.8"
   },
   "devDependencies": {
