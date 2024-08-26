@@ -41,10 +41,6 @@ export function SubscribeForm() {
   });
 
   async function handleRegisterSubscriberInEvent(data: SubscribeFormSchema) {
-    if (!data.batch_id) {
-      return toast.error('Lote é um campo obrigatório');
-    }
-
     try {
       const lote_id = data.batch_id ?? batchs?.[0]?.uuid_lote;
       const response = await api.post(`/register/${slug}`, {
