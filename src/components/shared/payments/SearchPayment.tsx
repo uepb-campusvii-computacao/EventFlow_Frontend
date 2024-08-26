@@ -12,11 +12,12 @@ import { useEvents } from '@/hooks/useEvents';
 import { api } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 
 const findUserFormSchema = z.object({
-  email: z.string().email(),
+  email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
 });
 
 type FindUserFormSchema = z.infer<typeof findUserFormSchema>;
@@ -25,7 +26,8 @@ export function SearchPayment() {
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
+    trigger,
+    formState: { isSubmitting, errors},
   } = useForm<FindUserFormSchema>({
     resolver: zodResolver(findUserFormSchema),
   });
@@ -46,8 +48,12 @@ export function SearchPayment() {
       navigate(
         `/pagamento/${response.data.uuid_lote}/usuario/${response.data.uuid_user}`
       );
-    } catch (err) {
-      console.log('Erro ao buscar usuario');
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data ||
+        'Ocorreu um erro ao registrar o usuário';
+      toast.error(errorMessage);
+      console.log(error);
     }
   }
 
@@ -71,19 +77,24 @@ export function SearchPayment() {
         <form onSubmit={handleSubmit(findUser)}>
           <div className="my-4">
             <Input
-              {...register('email')}
-              className="text-base"
-              type="email"
+              className={`text-base ${errors.email && 'border-2 border-red-500'}`}
               placeholder="E-mail"
+              {...register('email')}
+              onBlur={() => trigger('email')}
             />
+            {errors.email && (
+              <p className="text-red-500 font-semibold">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <DialogFooter>
             <button
               disabled={isSubmitting}
-              className="button-secondary text-base disabled:opacity-70"
+              className={`button-secondary text-base disabled:opacity-70  ${isSubmitting && 'animate-pulse'}`}
               type="submit"
             >
-              Buscar
+              {isSubmitting ? "Carregando..." : "Buscar"}
             </button>
           </DialogFooter>
         </form>
