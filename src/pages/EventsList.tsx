@@ -4,9 +4,10 @@ import { Header } from '@/components/shared/Header';
 import { Input } from '@/components/ui/input';
 import { useEvents } from '@/hooks/useEvents';
 import { Search } from 'lucide-react';
+import { useState } from 'react';
 
 export function EventsList() {
-  //const [searchKey, setSearchKey] = useState("");
+  const [searchKey, setSearchKey] = useState("");
   const { eventsQuery } = useEvents();
 
   return (
@@ -18,7 +19,7 @@ export function EventsList() {
             <Input
               type="text"
               placeholder="Pesquise o evento"
-              //onChange={(e) => setSearchKey(e.target.value)}
+              onChange={(e) => setSearchKey(e.target.value.toLowerCase())}
               className="pr-12 focus:!ring-purple-500"
             />
             <Search className="absolute right-4" />
@@ -26,7 +27,22 @@ export function EventsList() {
 
           <div className="grid grid-cols-4 place-items-center justify-between gap-4 py-8 max-[1200px]:grid-cols-3 max-[900px]:grid-cols-2 max-sm:grid-cols-1">
             {eventsQuery.data &&
-              eventsQuery.data.map((item) => (
+              eventsQuery.data.filter((item => {
+                if (searchKey.trim() === '') {
+                  return true;
+                }
+
+                // enquanto estivermos sem a data sendo enviada para alguns eventos
+                if (!item.date) {
+                  item.date = ''
+                }
+              
+                // Verifica se algum campo contém a chave de busca
+                const containsSearchResult =
+                  item.nome.toLowerCase().includes(searchKey) || 
+                  item.date.toLowerCase().includes(searchKey)
+                return containsSearchResult;
+              })).map((item) => (
                 <EventCard
                   key={item.uuid_evento}
                   slug={String(item.slug)}
