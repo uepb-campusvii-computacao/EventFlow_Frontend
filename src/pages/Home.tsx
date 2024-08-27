@@ -35,21 +35,13 @@ export function Home() {
         </section>
 
         <div className="flex h-24 items-center justify-around bg-purple-700">
-          <img
-            className="h-20 w-auto"
-            src={sponsor1}
-            alt=""
-          />
-          <img
-            className="h-16 w-auto"
-            src={sponsor2}
-            alt=""
-          />
-          <img
-            className="h-16 w-auto"
-            src={sponsor3}
-            alt=""
-          />
+          {[sponsor1, sponsor2, sponsor3].map((imageSrc) => {
+            return (<img
+              className="max-h-16 w-1/3 sm:w-auto"
+              src={imageSrc}
+              alt=""
+            />)
+          })}
         </div>
 
         <section className="min-h-dvh w-full bg-background py-8 sm:py-16">
