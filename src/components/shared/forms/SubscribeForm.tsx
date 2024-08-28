@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { SearchPayment } from '../payments/SearchPayment';
 import { SkeletonLoader } from '../skeletonLoader';
@@ -22,6 +22,7 @@ const subscribeFormSchema = z.object({
 type SubscribeFormSchema = z.infer<typeof subscribeFormSchema>;
 
 export function SubscribeForm() {
+  const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const { findEvent } = useEvents(slug);
   const { data: batchs, isLoading: isBatchsLoading } = useEventBatchs(
@@ -42,7 +43,7 @@ export function SubscribeForm() {
   async function handleRegisterSubscriberInEvent(data: SubscribeFormSchema) {
     try {
       const lote_id = data.batch_id ?? batchs?.[0]?.uuid_lote;
-      await api.post(`/register/${slug}`, {
+      const response = await api.post(`/register/${slug}`, {
         nome: data.name,
         email: data.email,
         instituicao: data.college,
@@ -51,9 +52,9 @@ export function SubscribeForm() {
       });
 
       //Função utilizada no sercomp
-      //navigate(`/pagamento/${lote_id}/usuario/${response.data.uuid_user}`);
+      navigate(`/pagamento/${lote_id}/usuario/${response.data.uuid_user}`);
 
-      window.location.href = 'https://payment-link.stone.com.br/pl_3y4vLelgk9pPRAqsO3IEVQ20MRxbmjo5'
+      //window.location.href = 'https://payment-link.stone.com.br/pl_3y4vLelgk9pPRAqsO3IEVQ20MRxbmjo5'
     } catch (error: any) {
       const errorMessage =
         error?.response?.data || 'Ocorreu um erro ao registrar o usuário';
