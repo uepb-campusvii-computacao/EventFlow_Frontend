@@ -79,12 +79,6 @@ export function PaymentVoucher() {
             {' '}
             <Files /> copiar e colar
           </button>
-          <a
-            className="button-secondary mt-2"
-            href="https://payment-link.stone.com.br/pl_0jObqPYEM7xdJxOu7Eh8o8RkDZnBGpg3"
-          >
-            Pagar com cartão
-          </a>
         </div>
       </div>
 
