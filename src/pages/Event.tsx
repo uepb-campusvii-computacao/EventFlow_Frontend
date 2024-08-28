@@ -11,7 +11,7 @@ export function Event() {
         <main className="flex min-h-dvh w-full flex-col items-end gap-4 pb-16 pt-8">
           <img
             className="sm:h-[388px] w-full h-[180px] rounded-md border-2 shadow-md bg-"
-            src="https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png"
+            src="https://i.imgur.com/yyMWmIB.png"
             width={160}
           />
           <div className="rounded-md border-2 bg-white p-8 shadow-md">
