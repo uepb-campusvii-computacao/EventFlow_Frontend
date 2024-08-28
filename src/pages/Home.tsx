@@ -12,7 +12,7 @@ export function Home() {
       <main className="flex h-full flex-col">
         <section className="flex w-full min-h-[80vh] items-center bg-accent">
           <Container className="flex gap-8 sm:gap:4 py-28 flex-col-reverse items-center sm:flex-row">
-            <div className="w-full sm:w-[70%]">
+            <div className="w-full sm:w-[65%]">
               <h1 className="sm:text-7xl font-bold max-sm:text-4xl max-sm:text-center pb-4">
                 Simplificando cada etapa do seu evento
               </h1>
@@ -27,7 +27,7 @@ export function Home() {
                 width={64}
                 height={64}
                 className="h-32 w-auto max-md:h-24"
-                src="/vite.svg"
+                src="/logo.png"
                 alt=""
               />
             </div>

@@ -9,8 +9,8 @@ export function Header() {
         <img
           width={64}
           height={64}
-          src="/vite.svg"
-          className="h-8 w-auto max-sm:h-6"
+          src="/logo.png"
+          className="h-12 w-auto max-sm:h-10"
           alt="logo"
         />
       </Link>
