@@ -91,7 +91,8 @@ export function PaymentVoucher() {
               </h1>
               <p className="text-center text-base font-light">
                 Notamos que foi realizada a inscrição, mas não foi realizado o
-                pagamento. Caso já tenha efetuado o pagamento, por favor, nos
+                pagamento. Caso já tenha efetuado o pagamento, atualize a
+                pagina, caso ainda esteja enfretando problemas por favor nos
                 envie o comprovante
               </p>
               <a
