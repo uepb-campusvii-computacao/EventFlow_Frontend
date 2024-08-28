@@ -3,7 +3,6 @@ import { SubscribeForm } from '@/components/shared/forms/SubscribeForm';
 import { Header } from '@/components/shared/Header';
 
 export function Event() {
-
   return (
     <>
       <Header />
@@ -16,7 +15,7 @@ export function Event() {
           />
           <div className="rounded-md border-2 bg-white p-8 shadow-md">
             <h1 className="text-center text-2xl font-semibold">
-              IV Semana da Administração SEMAD 2024
+              IV Semana dá Administração - SEMAD 2024
             </h1>
 
             <p className="my-3 text-lg font-light">
@@ -30,11 +29,11 @@ export function Event() {
               mercado de trabalho não permanece estático. Esse fluxo contínuo de
               mudanças resignifica o conceito de trabalho e desafia
               profissionais a adaptarem-se constantemente. É neste contexto, que
-              a 4ª Semana da Administração vem discutir sobre <b>GESTÃO DE
-              CARREIRA, INOVAÇÃO E MERCADO </b> buscando trabalhar o <b>MINDSET</b> de
-              crescimento: aprender sempre, se desenvolver tecnicamente e
-              evoluir aperfeiçoando suas habilidades não importando sua área de
-              atuação.
+              a 4ª Semana da Administração vem discutir sobre{' '}
+              <b>GESTÃO DE CARREIRA, INOVAÇÃO E MERCADO </b> buscando trabalhar
+              o <b>MINDSET</b> de crescimento: aprender sempre, se desenvolver
+              tecnicamente e evoluir aperfeiçoando suas habilidades não
+              importando sua área de atuação.
             </p>
           </div>
           <div className="w-full px-8 rounded-md border-2 bg-white p-8 shadow-md flex flex-col-reverse gap-4 sm:gap-16 sm:flex-row">
