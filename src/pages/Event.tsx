@@ -15,7 +15,7 @@ export function Event() {
           />
           <div className="rounded-md border-2 bg-white p-8 shadow-md">
             <h1 className="text-center text-2xl font-semibold">
-              IV Semana dá Administração - SEMAD 2024
+              IV Semana da Administração - SEMAD 2024
             </h1>
 
             <p className="my-3 text-lg font-light">
