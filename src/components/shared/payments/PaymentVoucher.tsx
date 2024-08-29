@@ -15,7 +15,7 @@ export function PaymentVoucher() {
   });
 
   const statusClassMap: { [key: string]: string } = {
-    APROVADO: 'payment-approved',
+    REALIZADO: 'payment-approved',
     PENDENTE: 'payment-pending',
     GRATUITO: 'payment-free',
     EXPIRADO: 'payment-expired',
