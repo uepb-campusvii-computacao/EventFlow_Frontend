@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
+import { Container } from './Container';
 
 export function Header() {
   return (
-    <header className="flex h-16 px-8 w-full items-center justify-between border-b-[4px] border-b-accent">
+    <header className="w-full border-b-[4px] border-b-accent">
+      <Container className='flex items-center justify-between py-2'>
+
       <Link to="/">
         <img
           width={64}
@@ -16,6 +19,7 @@ export function Header() {
       </Link>
       <NavBar />
       <MobileNavBar /> {/* its hidden until the width got 768px */}
+      </Container>
     </header>
   );
 }

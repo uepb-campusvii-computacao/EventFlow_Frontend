@@ -17,7 +17,7 @@ export function EventsList() {
     <>
       <Header />
       <Container>
-        <main className="flex min-h-screen flex-col p-16 max-sm:p-8">
+        <main className="flex min-h-screen flex-col py-16 max-sm:py-8">
           <div className="relative flex items-center">
             <Input
               type="text"
