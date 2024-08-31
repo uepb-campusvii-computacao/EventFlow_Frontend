@@ -14,8 +14,6 @@ export default function App() {
         <Route path="/eventos" element={<EventsList />} />
         <Route path="/eventos/:slug" element={<Event />} />
         <Route path="/pagamento/:batch_id/usuario/:user_id" element={<Payment />} />
-        
-        {/* Esta rota não está sendo utilizada */}
         <Route path="/eventos/:slug/inscricao" element={<Subscribe />} />
       </Routes>
     </BrowserRouter>
