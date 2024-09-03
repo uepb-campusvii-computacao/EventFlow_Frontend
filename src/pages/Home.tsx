@@ -3,20 +3,20 @@ import sponsor2 from '@/assets/sponsor-2.webp';
 import sponsor3 from '@/assets/sponsor-3.webp';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
-import { recursos } from '@/lib/constants';
+import { events, recursos } from '@/lib/constants';
 
 export function Home() {
   return (
     <>
       <Header />
       <main className="flex h-full flex-col bg-primary">
-        <section className="flex flex-col justify-between w-full min-h-[80vh] bg-black bg-opacity-80 bg-gradient-to-r from-primary from-30% to-95%% to-transparent">
+        <section className="flex flex-col justify-between w-full bg-black bg-opacity-80 bg-gradient-to-r from-primary from-30% to-95%% to-transparent">
           <Container className="flex gap-8 sm:gap:4 py-28 flex-col-reverse items-center sm:flex-row">
             <div className="flex-1 flex justify-center items-center">
               <img className="w-full" src="./src/assets/logo-v2.png" alt="" />
             </div>
-            <div className="w-6/12  text-white text-right max-sm:text-center">
-              <h1 className="sm:text-6xl font-bold max-sm:text-4xl max-sm:text-center pb-4">
+            <div className="w-6/12  text-white text-right max-sm:text-center max-sm:w-full">
+              <h1 className="text-4xl font-bold lg:text-6xl md:text-5xl  max-sm:text-center pb-4">
                 Simplificando cada etapa do seu evento
               </h1>
               <p className="text-lg font-light max-md:mt-4 max-sm:text-lg">
@@ -87,7 +87,7 @@ export function Home() {
               <img
                 className="max-h-max"
                 src="./src/assets/why-man.png"
-                alt=""
+                alt="Homem pensativo segurando um notebook, cercado por três interrogações"
               />
             </div>
           </Container>
@@ -131,10 +131,14 @@ export function Home() {
               </h1>
 
               <div className="mt-4 grid grid-cols-2 max-sm:grid-cols-1 flex-wrap max-w-md mx-auto justify-center gap-4 text-center">
-                {[1, 23, 4, 1].map((item) => {
+                {events.map((event, index) => {
                   return (
-                    <div key={item} className="flex max-w-56 h-40 flex-1 flex-col rounded-[10px] border bg-background p-4 shadow-md ">
-                      <img src="./src/assets/SERCOMP-logo.png" alt="" />
+                    <div
+                      key={index}
+                      className="flex max-w-56 h-40 flex-1 flex-col justify-center items-center rounded-[10px] border bg-background p-4 shadow-md "
+                    >
+                      <img src={event.imgUrl} alt={event.imgAlt} />
+                      {event.description && <p className='drop-shadow-sm text-xl'>{event.description}</p>}
                     </div>
                   );
                 })}

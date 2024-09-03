@@ -1,41 +1,3 @@
-export const events: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Congressos',
-    href: '/events/',
-    description:
-      'A modal dialog that interrupts the user with important content and expects a response.',
-  },
-  {
-    title: 'Hover Card',
-    href: '/docs/primitives/hover-card',
-    description:
-      'For sighted users to preview content available behind a link.',
-  },
-  {
-    title: 'Progress',
-    href: '/docs/primitives/progress',
-    description:
-      'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-  },
-  {
-    title: 'Scroll-area',
-    href: '/docs/primitives/scroll-area',
-    description: 'Visually or semantically separates content.',
-  },
-  {
-    title: 'Tabs',
-    href: '/docs/primitives/tabs',
-    description:
-      'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-  },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-  },
-];
-
 export const navbar_links: { title: string; href: string }[] = [
   {
     title: 'Eventos',
@@ -55,7 +17,26 @@ export const navbar_links: { title: string; href: string }[] = [
   },
 ];
 
+// usado na home page, para listar eventos que já passaram pelo Eventflow
+export const events = [{
+  imgUrl: './src/assets/SERCOMP-logo.png',
+  imgAlt: 'logo do evento sercomp',
+  description: null
+}, {
+  imgUrl: './src/assets/emoji-icon.png',
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}, {
+  imgUrl: './src/assets/emoji-icon.png',
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}, {
+  imgUrl: './src/assets/emoji-icon.png',
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}];
 
+// usando na home page para listar os recursos da plataforma
 export const recursos = [{
   imgUrl: './src/assets/message-icon.png',
   imgAlt: 'Ícone de mensagem com um usuário',
@@ -75,5 +56,5 @@ export const recursos = [{
   imgUrl: './src/assets/graph-icon.png',
   imgAlt: 'Ícone de gráfico com linha ascendente',
   title: 'Gerenciamento de Relatórios',
-  description: 'Visualize insights detalhados sobre o desempenho do evento, garantindo o aperfeiçoamento de futuras edições.'  
+  description: 'Visualize insights detalhados sobre o desempenho do evento, garantindo o aperfeiçoamento de futuras edições.'
 }]
