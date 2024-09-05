@@ -2,6 +2,7 @@ import { usePaymentInformation } from '@/hooks/usePaymentInformation';
 import { Files } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
+import { EditActivities } from '../forms/EditActivities';
 
 export function PaymentVoucher() {
   const { batch_id, user_id } = useParams<{
@@ -64,9 +65,10 @@ export function PaymentVoucher() {
               {data?.inscricao.status}
             </span>
           </span>
+          <EditActivities user_id={user_id || ""} user_data={data || null} />
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center">
           <img
             className="h-[200px] w-[200px]"
             src={data?.payment.qr_code_base64}
@@ -80,29 +82,6 @@ export function PaymentVoucher() {
             <Files /> copiar e colar
           </button>
         </div>
-      </div>
-
-      <div>
-        {data?.inscricao.status !== 'GRATUITO' &&
-          data?.inscricao.status !== 'REALIZADO' && (
-            <div className="w-[80%] mt-4 mx-auto flex flex-col gap-2 items-center">
-              <h1 className="text-center text-lg font-bold text-red-500">
-                Atenção
-              </h1>
-              <p className="text-center text-base font-light">
-                Notamos que foi realizada a inscrição, mas não foi realizado o
-                pagamento. Caso já tenha efetuado o pagamento, atualize a
-                pagina, caso ainda esteja enfretando problemas por favor nos
-                envie o comprovante
-              </p>
-              <a
-                className="mt-2 text-center rounded-full bg-green-500 px-4 py-2 text-xl font-medium text-white"
-                href={`https://wa.me/${import.meta.env.VITE_PHONE}?text=${encodeURIComponent(`Olá! Gostaria de enviar o comprovante de inscrição para o SEMAD referente ao inscrito: ${data?.user_name}, de email: ${data?.email}`)}`}
-              >
-                Enviar Comprovante
-              </a>
-            </div>
-          )}
       </div>
     </div>
   );
