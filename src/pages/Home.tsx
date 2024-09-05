@@ -11,7 +11,7 @@ export function Home() {
       <Header />
       <main className="flex h-full flex-col bg-primary">
         <section className="flex flex-col justify-between w-full bg-black bg-opacity-80 bg-gradient-to-r from-primary from-30% to-95%% to-transparent">
-          <Container className="flex gap-8 sm:gap:4 py-28 flex-col-reverse items-center sm:flex-row">
+          <Container className="flex gap-8 sm:gap:4 py-7 pb-24 sm:py-28 flex-col items-center sm:flex-row">
             <div className="flex-1 flex justify-center items-center">
               <img className="w-full" src="./src/assets/logo-v2.png" alt="" />
             </div>
@@ -83,9 +83,9 @@ export function Home() {
               </div>
             </div>
 
-            <div className="flex-1 flex justify-center items-center">
+            <div className="flex-1 flex justify-center items-center max-lg:hidden">
               <img
-                className="max-h-max"
+                className="max-h-max "
                 src="./src/assets/why-man.png"
                 alt="Homem pensativo segurando um notebook, cercado por três interrogações"
               />
@@ -93,7 +93,7 @@ export function Home() {
           </Container>
         </section>
 
-        <section className="w-full bg-black bg-opacity-80 bg-gradient-to-r from-primary from-30% to-95%% to-transparent py-28 text-white">
+        <section className="w-full bg-black bg-opacity-80 bg-gradient-to-r from-primary from-30% to-95%% to-transparent py-28 text-white max-sm:text-center">
           <Container>
             <h1 className="mb-16 text-center text-5xl font-bold max-sm:text-4xl">
               Nossos recursos:
@@ -102,7 +102,7 @@ export function Home() {
               {recursos.map(({ imgUrl, imgAlt, title, description }, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-center max-sm:flex-col max-sm:items-start max-sm:w-full max-w-lg"
+                  className="flex items-center justify-center max-sm:flex-col max-sm:w-full max-w-lg"
                 >
                   <img className="min-w-32" src={imgUrl} alt={imgAlt} />
                   <div>
@@ -117,7 +117,7 @@ export function Home() {
 
         <section className=" w-full bg-secondary">
           <Container className="flex items-end gap-4 p-16 pb-0 max-[1000px]:flex-col max-sm:p-8">
-            <div className="flex-1 flex justify-center items-center">
+            <div className="flex-1 flex justify-center items-center max-lg:hidden">
               <img
                 className="max-h-max"
                 src="./src/assets/man-poiting-to-sticker.png"
