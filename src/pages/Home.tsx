@@ -28,7 +28,7 @@ export function Home() {
                 height={64}
                 className="h-32 w-auto max-md:h-24"
                 src="/logo.png"
-                alt=""
+                alt="eventflow"
               />
             </div>
           </Container>
