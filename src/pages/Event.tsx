@@ -1,5 +1,6 @@
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
+import { SearchPayment } from '@/components/shared/payments/SearchPayment';
 
 export function Event() {
   return (
@@ -35,8 +36,9 @@ export function Event() {
               importando sua área de atuação.
             </p>
           </div>
-          <div className="w-full px-8 rounded-md border-2 bg-white justify-center p-8 shadow-md flex flex-col-reverse gap-4 sm:gap-16 sm:flex-row">
-            <h1 className="text-center text-2xl font-semibold">Inscrições encerradas</h1>
+          <div className="w-full px-8 rounded-md border-2 bg-white justify-center p-8 shadow-md flex-col gap-4 sm:gap-16 sm:flex-row">
+            <h1 className="text-center text-2xl font-semibold pb-10">Inscrições <span className='text-red-500'>ENCERRADAS</span>!</h1>
+            <p className='pb-10'>Se você ainda não escolheu sua atividade, acesso o link abaixo! 😺</p>
             {/*<SubscribeForm />
             
             <img
@@ -44,6 +46,7 @@ export function Event() {
               src="https://img.freepik.com/vetores-gratis/prancheta-estilo-cartoon-3d-com-icone-de-documento-suporte-de-papel-realista-com-ilustracao-vetorial-plana-de-contrato-ou-acordo-gestao-informacao-conceito-de-atribuicao_778687-986.jpg?t=st=1724694837~exp=1724698437~hmac=6dac47bed6d824b3bb02d2bceac2ea613a1fe452cf10d3674fbf32b7f7dc9342&w=740"
               alt="eventflow"
             />*/}
+            <SearchPayment />
           </div>
 
           {/* <Link to={`/eventos/${slug}/inscricao`} className="button-primary">
