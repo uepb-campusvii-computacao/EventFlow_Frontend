@@ -28,9 +28,10 @@ export function Home() {
           </Container>
 
           <div className="flex h-24 items-center justify-around bg-black bg-opacity-60">
-            {[sponsor1, sponsor2, sponsor3].map((imageSrc) => {
+            {[sponsor1, sponsor2, sponsor3].map((imageSrc, index) => {
               return (
                 <img
+                  key={index}
                   className="max-h-16 w-1/3 sm:w-auto"
                   src={imageSrc}
                   alt=""
