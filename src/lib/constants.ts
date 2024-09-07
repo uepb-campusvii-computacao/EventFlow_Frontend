@@ -1,40 +1,9 @@
-export const events: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Congressos',
-    href: '/events/',
-    description:
-      'A modal dialog that interrupts the user with important content and expects a response.',
-  },
-  {
-    title: 'Hover Card',
-    href: '/docs/primitives/hover-card',
-    description:
-      'For sighted users to preview content available behind a link.',
-  },
-  {
-    title: 'Progress',
-    href: '/docs/primitives/progress',
-    description:
-      'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-  },
-  {
-    title: 'Scroll-area',
-    href: '/docs/primitives/scroll-area',
-    description: 'Visually or semantically separates content.',
-  },
-  {
-    title: 'Tabs',
-    href: '/docs/primitives/tabs',
-    description:
-      'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-  },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-  },
-];
+import sercompLogo from '@/assets/SERCOMP-logo.png';
+import activitiesIcon from '@/assets/activities-icon.png';
+import calendarIcon from '@/assets/calendar-icon.png';
+import emojiIcon from '@/assets/emoji-icon.png';
+import graphIcon from '@/assets/graph-icon.png';
+import messageIcon from '@/assets/message-icon.png';
 
 export const navbar_links: { title: string; href: string }[] = [
   {
@@ -55,106 +24,44 @@ export const navbar_links: { title: string; href: string }[] = [
   },
 ];
 
-export const events_data = [
-  {
-    id: 1,
-    name: 'VI SERCOMP Congresso Sertanejo de Computação',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'New York, USA',
-    date: '2024-07-23',
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Los Angeles, USA',
-    date: '2024-07-22',
-  },
-  {
-    id: 3,
-    name: 'Carlos Santos',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'São Paulo, Brazil',
-    date: '2024-07-21',
-  },
-  {
-    id: 4,
-    name: 'Maria Garcia',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Madrid, Spain',
-    date: '2024-07-20',
-  },
-  {
-    id: 5,
-    name: 'Akira Tanaka',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.pnghttps://example.com/images/akiratanaka.jpg',
-    location: 'Tokyo, Japan',
-    date: '2024-07-19',
-  },
-  {
-    id: 6,
-    name: "Liam O'Connor",
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Dublin, Ireland',
-    date: '2024-07-18',
-  },
-  {
-    id: 7,
-    name: 'Emma Müller',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Berlin, Germany',
-    date: '2024-07-17',
-  },
-  {
-    id: 8,
-    name: 'Pierre Dubois',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Paris, France',
-    date: '2024-07-16',
-  },
-  {
-    id: 9,
-    name: 'Chen Wei',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.pnghttps://example.com/images/chenwei.jpg',
-    location: 'Beijing, China',
-    date: '2024-07-15',
-  },
-  {
-    id: 10,
-    name: 'Olivia Johnson',
-    image_url:
-      'https://even3.blob.core.windows.net/banner/CAPAPARASITE.72d02a733c034fb18316.png',
-    location: 'Sydney, Australia',
-    date: '2024-07-14',
-  },
-];
+// Usado na home page, para listar eventos que já passaram pelo Eventflow
+export const events = [{
+  imgUrl: sercompLogo,
+  imgAlt: 'logo do evento sercomp',
+  description: null
+}, {
+  imgUrl: emojiIcon,
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}, {
+  imgUrl: emojiIcon,
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}, {
+  imgUrl: emojiIcon,
+  imgAlt: 'Emoji muito estiloso, com óculos escuro',
+  description: 'Em andamento...'
+}];
 
-export const events_batchs = [
-  {
-    id: '1',
-    name: 'Evento A',
-    description: 'Descrição do Evento A',
-    price: 90.0,
-  },
-  {
-    id: '2',
-    name: 'Evento B',
-    description: 'Descrição do Evento B',
-    price: 90.0,
-  },
-  {
-    id: '3',
-    name: 'Evento C',
-    description: 'Descrição do Evento C',
-    price: 90.0,
-  },
-];
+// Usando na home page para listar os recursos da plataforma
+export const recursos = [{
+  imgUrl: messageIcon,
+  imgAlt: 'Ícone de mensagem com um usuário',
+  title: 'Gerenciamento de Inscrições',
+  description: 'Otimize as inscrições e o acompanhamento dos participantes, garantindo uma experiência fluida para os usuários.'
+}, {
+  imgUrl: calendarIcon,
+  imgAlt: 'Ícone de calendário com marcador de localização',
+  title: 'Agendamento de Locais',
+  description: 'Simplifique a reserva de espaços, agendamento de datas e horários, melhorando o funcionamento do evento.'
+}, {
+  imgUrl: activitiesIcon,
+  imgAlt: 'Ícone de três listas de tarefas',
+  title: 'Gestão de Atividades e Suporte',
+  description: 'Coordene e organize todas as atividades e sessões do evento, garantindo um cronograma claro e eficiente.'
+}, {
+  imgUrl: graphIcon,
+  imgAlt: 'Ícone de gráfico com linha ascendente',
+  title: 'Gerenciamento de Relatórios',
+  description: 'Visualize insights detalhados sobre o desempenho do evento, garantindo o aperfeiçoamento de futuras edições.'
+}]
