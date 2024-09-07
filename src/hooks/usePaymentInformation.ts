@@ -21,11 +21,6 @@ async function fetchPaymentInformation(
       paymentInfoPromise,
     ]);
 
-    console.log({
-      ...responseUserInfo.data,
-      ...responsePaymentInfo.data,
-    });
-
     return {
       ...responseUserInfo.data,
       payment: { ...responsePaymentInfo.data },
