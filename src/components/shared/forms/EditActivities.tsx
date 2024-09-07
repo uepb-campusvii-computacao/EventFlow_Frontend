@@ -60,6 +60,16 @@ export function EditActivities({ user_id, user_data }: UpdateUserParams) {
     oficina: 'oficinas',
   };
 
+  type FieldMapper = {
+    [key: string] : string;
+  }
+
+  const conversor: FieldMapper = {
+    "minicurso" : "Atividades manhã",
+    "workshop" : "Workshops",
+    "oficina" : "Atividades noite"
+  }
+
   async function onSubmit(data: any) {
     try {
       // Envia os dados atualizados do usuário
@@ -96,9 +106,12 @@ export function EditActivities({ user_id, user_data }: UpdateUserParams) {
                 isSubmitting ? 'blurred' : ''
               }`}
               {...register(field)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || field === 'workshop'}
+              hidden={field === 'workshop'} 
             >
-              <option value="">{`${field.charAt(0).toUpperCase() + field.slice(1)}...`}</option>
+              <option
+                value="">{`${conversor[field]}...`}
+              </option>
               {atividades?.[fieldMapping[field]]?.map((item) => (
                 <option key={item.uuid_atividade} value={item.uuid_atividade}>
                   {item.nome} - Vagas ({item._count}/{item.max_participants})
