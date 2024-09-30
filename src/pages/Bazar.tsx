@@ -4,16 +4,17 @@ import { Heart, Instagram, Share2 } from 'lucide-react';
 
 export function Bazar() {
   const handleShare = async () => {
-    const imageUrl = 'https://i.imgur.com/mIQT70l.png'; // URL da imagem que você quer compartilhar
-    const title = 'Confira essa imagem!';
-    const text = 'Dê uma olhada nessa imagem incrível.';
+    const title =
+      '🎉 I Bazar Solidário Nina - Comemoração dos 18 anos do CCEA! 🎉';
+    const text =
+      'No dia 16/10/2024, acontecerá um bazar especial de roupas, calçados e acessórios no nosso campus! Todo o valor arrecadado será destinado à castração e à compra de medicamentos antibióticos, antifúngicos e carrapaticidas para os animais acolhidos pelo CCEA.';
 
     if (navigator.share) {
       try {
         await navigator.share({
           title,
           text,
-          url: imageUrl, // URL para compartilhar, que pode ser um link da imagem ou página
+          url: 'https://www.instagram.com/p/DAgljthO6PR/', // URL para compartilhar, que pode ser um link da imagem ou página
         });
         console.log('Compartilhamento bem-sucedido!');
       } catch (error) {
@@ -80,21 +81,21 @@ export function Bazar() {
               futuro mais saudável e digno para esses animais.
             </p>
 
-            <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex items-center justify-center sm:flex-col flex-col gap-4 mb-4">
               <a
-                className="flex items-center gap-2 py-2 px-3 rounded-md bg-red-500 text-white font-bold uppercase"
+                className="flex sm:w-auto w-full items-center justify-center gap-2 py-2 px-3 rounded-md bg-red-500 text-white font-bold uppercase"
                 href="https://link.mercadopago.com.br/bazarsolidarionina"
               >
                 <Heart /> Doe aqui
               </a>
               <a
-                className="flex items-center gap-2 py-2 px-3 rounded-md bg-gradient-to-tl from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-bold uppercase"
+                className="flex sm:w-auto w-full items-center justify-center gap-2 py-2 px-3 rounded-md bg-gradient-to-tl from-[#feda75] via-[#d62976] to-[#4f5bd5] text-white font-bold uppercase"
                 href="https://www.instagram.com/bazarsolidarionina"
               >
-                <Instagram /> Conheça nosso instagram
+                <Instagram /> Nosso Instagram
               </a>
               <button
-                className="flex items-center gap-2 rounded-md py-2 px-3 bg-slate-200 text-black"
+                className="flex sm:w-auto w-full items-center justify-center gap-2 rounded-md py-2 px-3 font-bold uppercase bg-slate-200 text-black"
                 onClick={handleShare}
               >
                 <Share2 />
