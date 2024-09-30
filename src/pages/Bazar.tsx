@@ -81,7 +81,7 @@ export function Bazar() {
               futuro mais saudável e digno para esses animais.
             </p>
 
-            <div className="flex items-center justify-center sm:flex-col flex-col gap-4 mb-4">
+            <div className="flex items-center justify-center sm:flex-row flex-col gap-4 mb-4">
               <a
                 className="flex sm:w-auto w-full items-center justify-center gap-2 py-2 px-3 rounded-md bg-red-500 text-white font-bold uppercase"
                 href="https://link.mercadopago.com.br/bazarsolidarionina"
