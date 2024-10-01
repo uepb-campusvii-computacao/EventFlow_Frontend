@@ -42,14 +42,18 @@ export function Bazar() {
             <p className="my-3 text-lg font-light">
               É com grande entusiasmo que anunciamos o I Bazar Solidário NINA,
               que acontecerá no{' '}
-              <strong>dia 16 de outubro de 2024, no Campus VII da UEPB</strong>,
-              na cidade de Patos, Paraíba.
+              <strong>
+                dia 16 de outubro de 2024 das 8h às 21h, no Campus VII da UEPB
+              </strong>
+              , na cidade de Patos, Paraíba.
               <br />
               <br />
               Entre os dias 01 e 14 de outubro, estaremos recebendo doações de
               roupas e calçados (masculinos, femininos e infantis) em bom estado
-              de uso. Sua contribuição é fundamental para o sucesso do evento e
-              para ajudar os animais acolhidos no campus.
+              de uso, nos horários de 8h ao meio-dia e das 18h às 21h30, na
+              Secretaria da Direção de Centro. Sua contribuição é fundamental
+              para o sucesso do evento e para ajudar os animais acolhidos no
+              campus.
             </p>
             <h2 className="text-xl my-4 font-semibold">Sobre o evento</h2>
             <p className="my-3 text-lg font-light">
