@@ -4,6 +4,7 @@ export type Event = {
   nome: string;
   slug: string;
   date: string;
+  conteudo: string;
   banner_img_url?: string;
 };
 

@@ -1,10 +1,25 @@
 import { api } from '@/lib/api';
 import { Event } from '@/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCookies } from 'react-cookie';
 
 async function fetchEventsData(): Promise<Event[]> {
   try {
     const response = await api.get('/events');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching events data:', error);
+    throw error;
+  }
+}
+
+async function fetchEventsByUser(token: string): Promise<Event[]> {
+  try {
+    const response = await api.get('/user/my-events', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching events data:', error);
@@ -51,11 +66,18 @@ function searchEvent(
 }
 
 export function useEvents(query?: string) {
+  const [cookies] = useCookies(['token']);
+  const token = cookies.token;
   const queryClient = useQueryClient();
 
   const eventsQuery = useQuery({
     queryFn: fetchEventsData,
     queryKey: ['events-data'],
+  });
+
+  const eventsQueryByUser = useQuery({
+    queryFn: () => fetchEventsByUser(token),
+    queryKey: ['user-events'],
   });
 
   const isSearching = Boolean(query && query.trim());
@@ -64,11 +86,12 @@ export function useEvents(query?: string) {
     : [];
 
   const findEvent = isSearching
-  ? getEventBySlug(queryClient, query || '')
-  : undefined;
+    ? getEventBySlug(queryClient, query || '')
+    : undefined;
 
   return {
     eventsQuery,
+    eventsQueryByUser,
     findEvent,
     searchedEvents,
     isSearching,
