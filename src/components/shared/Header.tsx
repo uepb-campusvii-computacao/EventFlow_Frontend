@@ -1,10 +1,22 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Container } from './Container';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
 
 export function Header() {
   const { userQuery } = useAuth();
+
+  const [cookies, setCookie, removeCookie] = useCookies(["token"])
+
+  const navigate = useNavigate();
+
+  function handleToggleLogOut(){
+    removeCookie('token', { path: '/' });
+    navigate("/")
+  }
 
   return (
     <header className="w-full border-b-[4px] border-b-accent">
@@ -21,9 +33,14 @@ export function Header() {
         <NavBar />
         <MobileNavBar /> {/* its hidden until the width got 768px */}
         {userQuery.data?.initials ? (
-          <div className="font-mono border rounded-full w-12 h-12 flex items-center justify-center text-center">
-            {userQuery.data?.initials}
-          </div>
+          <Popover>
+            <PopoverTrigger className="font-mono border rounded-full w-12 h-12 flex items-center justify-center text-center">
+              {userQuery.data?.initials}
+            </PopoverTrigger>
+            <PopoverContent>
+              <button onClick={handleToggleLogOut}>Log out</button>
+            </PopoverContent>
+          </Popover>
         ) : (
           <a href="/sign-in">Login</a>
         )}

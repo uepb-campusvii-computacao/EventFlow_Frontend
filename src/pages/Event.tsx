@@ -1,10 +1,24 @@
 import { Container } from '@/components/shared/Container';
+import { EditActivities } from '@/components/shared/forms/EditActivities';
 import { Header } from '@/components/shared/Header';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useEvents } from '@/hooks/useEvents';
 import { api } from '@/lib/api';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useNavigate, useParams } from 'react-router-dom';
+
+interface Activity {
+  uuid_atividade: string;
+  nome: string;
+  max_participants: number;
+  tipo_atividade: string;
+  _count: number;
+}
+
+interface ActivitiesByType {
+  [type: string]: Activity[];
+}
 
 export function Event() {
   const { slug } = useParams();
@@ -18,17 +32,84 @@ export function Event() {
 
   const [selectedBatch, setSelectedBatch] = useState<string>();
 
+  const [minhasAtividades, setMinhasAtividades] = useState<ActivitiesByType>();
+
+  const [atividades, setAtividades] = useState<ActivitiesByType>();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [selectedActivities, setSelectedActivities] = useState<{
+    atividades: { atividade_id: string }[];
+  } | null>();
+
+  const navigate = useNavigate();
+
+  const [cookies] = useCookies(['token']);
+  const token = cookies.token;
+
+  function handleSelectionChange(selected: { [key: string]: string }) {
+    const atividades = Object.values(selected).map((atividade_id) => ({
+      atividade_id,
+    }));
+
+    const result = atividades.length > 0 ? { atividades } : null;
+
+    setSelectedActivities(result);
+  }
+
   async function handleSubscribeInEvent() {
+    if (!token) {
+      navigate('/sign-in');
+    }
     setIsSubmitting(true);
     try {
-      await api.post(`/lote/${selectedBatch}/register`);
+      await api.post(`/lote/${selectedBatch}/register`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: selectedActivities,
+      });
+
+      location.reload()
     } catch (error) {
       console.log(error);
     }
     setIsSubmitting(false);
   }
+
+  async function fetchMyActivities() {
+    try {
+      const response = await api.get(
+        `/user/events/${findEvent?.uuid_evento}/my-activities`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMinhasAtividades(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fetchActivitiesInEvent() {
+    try {
+      const response = await api.get(
+        `/events/${findEvent?.uuid_evento}/atividades`,
+      );
+
+      setAtividades(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchMyActivities();
+    fetchActivitiesInEvent();
+  }, []);
 
   return (
     <>
@@ -49,7 +130,7 @@ export function Event() {
             </div>
           )}
 
-          {new Date() >= new Date(findEvent?.date || '') && !subscribed ? (
+          {(new Date() >= new Date(findEvent?.date || '')) && !subscribed ? (
             <div className="w-full px-8 rounded-md border-2 bg-white justify-center p-8 shadow-md flex-col gap-4 sm:gap-16 sm:flex-row">
               <h1 className="text-center text-2xl font-semibold">
                 Inscrições <span className="text-red-500">ENCERRADAS</span>!
@@ -74,6 +155,10 @@ export function Event() {
                       </button>
                     ))}
                   </div>
+                  <EditActivities
+                    data={atividades ?? {}}
+                    onSelect={handleSelectionChange}
+                  />
                   <button
                     disabled={isSubmitting}
                     onClick={handleSubscribeInEvent}
@@ -91,12 +176,35 @@ export function Event() {
               <h1 className="text-center text-2xl font-semibold">
                 Status: <span className="text-green-500">Inscrito</span>!
               </h1>
+
+              {Object.entries(minhasAtividades ?? {}).map(([type, activities]) => (
+                <div key={type} className="bg-gray-100 py-6">
+                  <h2 className="text-2xl font-bold text-center mb-4 text-gray-700">
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </h2>
+                  <div className="grid gap-4">
+                    {activities.map((activity) => (
+                      <div
+                        key={activity.uuid_atividade}
+                        className="bg-white shadow-md rounded-lg p-4 max-w-md mx-auto"
+                      >
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                          {activity.nome}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Tipo: {activity.tipo_atividade}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Participantes: {activity._count} /{' '}
+                          {activity.max_participants}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-
-          {/* <Link to={`/eventos/${slug}/inscricao`} className="button-primary">
-            Inscreva-se
-          </Link> */}
         </main>
       </Container>
     </>
