@@ -1,9 +1,10 @@
 import { Input } from '@/components/ui/input';
-import { api } from '@/lib/api';
+import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
@@ -41,10 +42,12 @@ export function SignUpForm() {
   async function handleRegisterUser(data: SignUpFormSchema) {
     try {
       await api.post('/register', data);
-      
       navigate("/sign-in")
     } catch (error) {
-      console.log(error);
+      checkError(error, 
+        (message) => toast.error(message),
+        () => toast.error('Erro ao buscar atividades: ' + error || 'Ocorreu um erro.')
+      );
     }
   }
 

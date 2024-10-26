@@ -76,8 +76,9 @@ export function useEvents(query?: string) {
   });
 
   const eventsQueryByUser = useQuery({
-    queryFn: () => fetchEventsByUser(token),
+    queryFn: () => token ? fetchEventsByUser(token) : Promise.reject(new Error('Token is not available')),
     queryKey: ['user-events'],
+    enabled: !!token,
   });
 
   const isSearching = Boolean(query && query.trim());

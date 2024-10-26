@@ -1,21 +1,22 @@
 import { Input } from '@/components/ui/input';
-import { api } from '@/lib/api';
+import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 const signInFormSchema = z.object({
-  email: z.string().email('informe um endereço de email valido'),
-  senha: z.string().min(8, 'este campo deve ter no minimo 8 caracteres'),
+  email: z.string().email('Informe um endereço de email válido'),
+  senha: z.string().min(8, 'Este campo deve ter no mínimo 8 caracteres'),
 });
 
 type SignInFormSchema = z.infer<typeof signInFormSchema>;
 
-export function SingInForm() {
+export default function SignInForm() {
   const {
     register,
     handleSubmit,
@@ -25,10 +26,11 @@ export function SingInForm() {
   });
 
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
-
+  const [emailForRecovery, setEmailForRecovery] = useState('');
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
+  
   const navigate = useNavigate();
-
-  const [cookies, setCookie] = useCookies(['token']);
+  const [, setCookie] = useCookies(['token']);
 
   async function handleSignIn(data: SignInFormSchema) {
     try {
@@ -36,12 +38,34 @@ export function SingInForm() {
       setCookie('token', response.data.token, { path: '/' });
       navigate('/');
     } catch (error) {
-      // setError('email', {
-      //     type: 'registeredValue',
-      //     message: 'esse email já foi cadastrado',
-      // });
-      console.error('Error:', error);
-      throw error;
+      checkError(
+        error,
+        (message) => toast.error(message),
+        () => toast.error('Erro ao fazer login: ' + (error || 'Ocorreu um erro.'))
+      );
+    }
+  }
+
+  async function handlePasswordReset() {
+    if (isRecoveringPassword) return;
+    setIsRecoveringPassword(true);
+    try {
+      if (!emailForRecovery) {
+        toast.error('Por favor, insira um endereço de email.');
+        setIsRecoveringPassword(false);
+        return;
+      }
+      
+      await api.post('/request-password-reset', { email: emailForRecovery });
+      toast.success('E-mail de recuperação de senha enviado!');
+    } catch (error) {
+      checkError(
+        error,
+        (message) => toast.error(message),
+        () => toast.error('Erro ao enviar email de recuperação: ' + (error || 'Ocorreu um erro.'))
+      );
+    } finally {
+      setIsRecoveringPassword(false);
     }
   }
 
@@ -57,6 +81,7 @@ export function SingInForm() {
           placeholder="E-mail"
           type="email"
           {...register('email')}
+          onChange={(e) => setEmailForRecovery(e.target.value)}
         />
       </div>
       <div className="flex w-full flex-col gap-1">
@@ -71,12 +96,14 @@ export function SingInForm() {
             {...register('senha')}
             type={isVisiblePassword ? 'text' : 'password'}
           />
-          <a
-            className="text-blue-primary absolute -bottom-6 right-0 text-xs font-light"
-            href="#"
+          <button
+            type="button"
+            className={`text-blue-primary absolute -bottom-6 right-0 text-xs font-light ${isRecoveringPassword ? 'pointer-events-none opacity-50' : ''}`}
+            onClick={handlePasswordReset}
+            disabled={isRecoveringPassword}
           >
             Esqueceu senha?
-          </a>
+          </button>
           <button
             className="absolute right-2 text-gray-700"
             type="button"
