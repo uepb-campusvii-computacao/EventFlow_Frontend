@@ -66,6 +66,7 @@ export function Event() {
         },
       });
       fetchMyActivities();
+      window.location.reload()
     } catch (error) {
       checkError(error, 
         (message) => toast.error(message),
