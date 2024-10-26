@@ -26,10 +26,14 @@ export function Event() {
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
   const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
-  const { data: subscribed } = useUserRegistrationInEvent(findEvent?.uuid_evento);
+  const { data: subscribed } = useUserRegistrationInEvent(
+    findEvent?.uuid_evento
+  );
 
   const [selectedBatch, setSelectedBatch] = useState<string>();
-  const [minhasAtividades, setMinhasAtividades] = useState<ActivitiesByType>({});
+  const [minhasAtividades, setMinhasAtividades] = useState<ActivitiesByType>(
+    {}
+  );
   const [atividades, setAtividades] = useState<ActivitiesByType>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<{
@@ -52,12 +56,12 @@ export function Event() {
       navigate('/sign-in');
       return;
     }
-  
+
     if (!selectedBatch) {
-      toast.error('Selecione um lote!')
+      toast.error('Selecione um lote!');
       return;
     }
-  
+
     setIsSubmitting(true);
     try {
       await api.post(`/lote/${selectedBatch}/register`, selectedActivities, {
@@ -66,8 +70,10 @@ export function Event() {
         },
       });
       fetchMyActivities();
+      window.location.reload();
     } catch (error) {
-      checkError(error, 
+      checkError(
+        error,
         (message) => toast.error(message),
         () => toast.error('Ocorreu um erro inesperado.')
       );
@@ -90,9 +96,13 @@ export function Event() {
       );
       setMinhasAtividades(response.data);
     } catch (error) {
-      checkError(error, 
+      checkError(
+        error,
         (message) => toast.error(message),
-        () => toast.error('Erro ao buscar atividades: ' + error || 'Ocorreu um erro.')
+        () =>
+          toast.error(
+            'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
+          )
       );
     }
   };
@@ -104,9 +114,13 @@ export function Event() {
       );
       setAtividades(response.data);
     } catch (error) {
-      checkError(error, 
+      checkError(
+        error,
         (message) => toast.error(message),
-        () => toast.error('Erro ao buscar atividades: ' + error || 'Ocorreu um erro.')
+        () =>
+          toast.error(
+            'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
+          )
       );
     }
   };
@@ -134,10 +148,11 @@ export function Event() {
             alt="Banner do evento"
             width={160}
           />
+          
           {findEvent?.conteudo && (
             <div className="rounded-md border-2 bg-white p-8 shadow-md w-full">
               <div
-                style={{ all: 'unset' }}
+                className="w-full prose-sm"
                 dangerouslySetInnerHTML={{ __html: findEvent?.conteudo }}
               ></div>
             </div>
@@ -176,7 +191,7 @@ export function Event() {
                   onClick={handleSubscribeInEvent}
                   className="rounded-md px-3 py-2 font-semibold text-white text-center bg-purple-500 text-lg hover:bg-purple-700 disabled:bg-purple-900"
                 >
-                  {token ? "Inscreva-se" : "Fazer login"}
+                  {token ? 'Inscreva-se' : 'Fazer login'}
                 </button>
               </div>
             )
