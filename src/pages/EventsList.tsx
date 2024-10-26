@@ -7,8 +7,6 @@ import { useEvents } from '@/hooks/useEvents';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 
-
-
 export function EventsList() {
   const [searchKey, setSearchKey] = useState('');
   const { eventsQuery } = useEvents();
