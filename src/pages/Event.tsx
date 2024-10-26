@@ -9,7 +9,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
 
 interface Activity {
   uuid_atividade: string;
