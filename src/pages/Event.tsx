@@ -143,7 +143,7 @@ export function Event() {
       <Container>
         <main className="flex min-h-dvh w-full flex-col items-center gap-4 pb-16 pt-8">
           <img
-            className="sm:h-[388px] w-full h-[180px] rounded-md border-2 shadow-md"
+            className="w-full h-auto rounded-md border-2 shadow-md"
             src={findEvent?.banner_img_url}
             alt="Banner do evento"
             width={160}

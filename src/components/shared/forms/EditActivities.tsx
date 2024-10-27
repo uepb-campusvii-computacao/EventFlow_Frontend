@@ -1,10 +1,3 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useState } from 'react';
 
 interface Activity {
@@ -49,22 +42,24 @@ export function EditActivities({
               {type + 's'}
             </label>
 
-            <Select onValueChange={(value) => handleSelect(value, type)}>
-              <SelectTrigger>
-                <SelectValue placeholder={type + 's'} />
-              </SelectTrigger>
-              <SelectContent>
-                {activities.map((activity) => (
-                  <SelectItem
-                    key={activity.uuid_atividade}
-                    value={activity.uuid_atividade}
-                  >
-                    {activity.nome} - Vagas ({activity._count}/
-                    {activity.max_participants})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <select
+              onChange={(e) => handleSelect(e.target.value, type)}
+              value={selected[type] || ''}
+              className="border rounded p-2"
+            >
+              <option value="" disabled>
+                {type + 's'}
+              </option>
+              {activities.map((activity) => (
+                <option
+                  key={activity.uuid_atividade}
+                  value={activity.uuid_atividade}
+                >
+                  {activity.nome} - Vagas ({activity._count}/
+                  {activity.max_participants})
+                </option>
+              ))}
+            </select>
           </div>
         ) : null
       )}
