@@ -1,25 +1,49 @@
-import { CardPayment, initMercadoPago, StatusScreen } from '@mercadopago/sdk-react';
-import { ICardPaymentBrickPayer, ICardPaymentFormData } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
+import {
+  CardPayment,
+  initMercadoPago,
+  StatusScreen,
+} from '@mercadopago/sdk-react';
+import {
+  ICardPaymentBrickPayer,
+  ICardPaymentFormData,
+} from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
 import { useEffect } from 'react';
 
 export function BrikcCardMp() {
-
   useEffect(() => {
     initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
   }, []);
 
-  const onSubmit = async (formData: ICardPaymentFormData<ICardPaymentBrickPayer>) => {
-    // callback chamado ao clicar no botão de submissão dos dados
-    const response = await fetch('/process_payment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    }).then((response) => response.json());
+  const customization = {
+    paymentMethods: {
+      minInstallments: 1,
+      maxInstallments: 5,
+    },
+  };
 
-    //coletar o token e fazer a requisição para o backend
-    console.log(response);
+  //pegar o preço do lote
+  const initialization = {
+    amount: 100,
+  };
+
+  const onSubmit = async (
+    formData: ICardPaymentFormData<ICardPaymentBrickPayer>
+  ) => {
+    /*
+    {
+      installments: 1,
+      issuer_id: "24",
+      payer: {
+        email: "jonh@gmail.com", 
+        identification: {type: "CPF", number: "12345678900"}
+      },
+      payment_method_id: "master",
+      token: "987982375fg070wsd01919290",
+      transaction_amount: 1
+    }
+    */
+    //fazer chamada no backend
+    console.log(formData);
   };
   const onError = async (error: any) => {
     console.log(error);
@@ -33,15 +57,16 @@ export function BrikcCardMp() {
 
   return (
     <CardPayment
-      initialization={{ amount: 100 }}
+      initialization={initialization}
       onSubmit={onSubmit}
+      customization={customization}
       onReady={onReady}
       onError={onError}
     />
   );
 }
 
-export function StatusBrickMp({paymentId}: {paymentId: string}) {
+export function StatusBrickMp({ paymentId }: { paymentId: string }) {
   const initialization = {
     paymentId, // id do pagamento a ser mostrado
   };
