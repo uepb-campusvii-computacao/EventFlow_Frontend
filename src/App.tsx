@@ -20,7 +20,7 @@ export default function App() {
         <Route path="/eventos" element={<EventsList />} />
         <Route path="/eventos/:slug" element={<Event />} />
         <Route path="/eventos/I-bazar-solidario-nina" element={<Bazar />} />
-        <Route path="/pagamento/:batch_id/usuario/:user_id" element={<Payment />} />
+        <Route path="/pagamentos/:slug" element={<Payment />} />
         <Route path="/eventos/:slug/inscricao" element={<Subscribe />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
