@@ -1,48 +1,39 @@
-import { StatusBrickMp } from "@/components/shared/BrickMP";
-import { Header } from "@/components/shared/Header";
-import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import { useUserRegistrationInEvent } from "@/hooks/useEventInscription";
-import { useParams, useNavigate } from "react-router-dom";
-import { useEvents } from "@/hooks/useEvents";
-import { useCookies } from "react-cookie";
-
+import { StatusBrickMp } from '@/components/shared/BrickMP';
+import { Header } from '@/components/shared/Header';
+import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
+import { useEvents } from '@/hooks/useEvents';
+import toast from 'react-hot-toast';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export function Payment() {
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
-  const { data: subscribed } = useUserRegistrationInEvent(
-    findEvent?.uuid_evento
-  );
+  const {
+    data: { id_payment_mercado_pago, isSubscribed },
+    isFetching,
+    error,
+  } = useUserRegistrationInEvent(findEvent?.uuid_evento);
+
   const navigate = useNavigate();
-  const [cookies] = useCookies(['token']);
-  const token = cookies.token;
-  
-  const [paymentId, setPaymentId] = useState<string>("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await api.get(`/user/in-event/${findEvent?.uuid_evento}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setPaymentId(response.data.id_payment_mercado_pago);
-    }
-    fetchData()
-  },[]);
-
-  if(!subscribed){
-    navigate("/")
+  if (!isSubscribed) {
+    navigate('/');
   }
+
+  if (error) {
+    toast.error('Erro no servidor! Tente novamente mais tarde :(');
+  }
+
   return (
     <>
       <Header />
-      <main className="flex min-h-[calc(100dvh-4rem)] w-full justify-center bg-accent p-2 md:p-12">
-        <StatusBrickMp paymentId={paymentId} />
+      <main className="flex flex-col gap-5 min-h-[calc(100dvh-4rem)] w-full justify-center items-center bg-accent p-2 md:p-12">
+        {isFetching ? (
+          <div>Carregando...</div>
+        ) : (
+          <StatusBrickMp paymentId={id_payment_mercado_pago} />
+        )}
       </main>
     </>
   );
 }
-
-
