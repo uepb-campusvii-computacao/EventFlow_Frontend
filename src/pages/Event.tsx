@@ -1,4 +1,4 @@
-import { BrikcCardMp, StatusBrickMp } from '@/components/shared/BrickMP';
+import { BrickCardMp } from '@/components/shared/BrickMP';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
@@ -7,7 +7,8 @@ import { useEvents } from '@/hooks/useEvents';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import toast from 'react-hot-toast';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { api } from '@/lib/api';
 
 export function Event() {
   const { slug } = useParams();
@@ -26,35 +27,32 @@ export function Event() {
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
 
+
   const handleSubscribeInEvent = async () => {
     if (!token) {
       navigate('/sign-in');
       return;
     }
-
     if (!selectedBatch) {
       toast.error('Selecione um lote!');
       return;
     }
 
     setIsSubmitting(true);
-    // try {
-    //   await api.post(`/lote/${selectedBatch}/register`, selectedActivities, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
-    //
-    //   window.location.reload();
-    // } catch (error) {
-    //   checkError(
-    //     error,
-    //     (message) => toast.error(message),
-    //     () => toast.error('Ocorreu um erro inesperado.')
-    //   );
-    // } finally {
-    //   setIsSubmitting(false);
-    // }
+    try {
+     await api.post(`/lote/${selectedBatch}/register`, undefined,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      window.location.reload();
+
+    } catch (error) {
+      toast.error('Erro ao se inscrever no evento!');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -129,13 +127,13 @@ export function Event() {
                     Inscreve-se
                   </button>
                 ) : (
-                  <BrikcCardMp />
+                  <BrickCardMp />
                 )}
               </div>
             )
           ) : (
             <div>
-              <StatusBrickMp paymentId="" />
+              <Link to={`/pagamentos/${slug}`}> Ver comprovante</Link>
             </div>
           )}
         </main>
@@ -143,3 +141,5 @@ export function Event() {
     </>
   );
 }
+
+

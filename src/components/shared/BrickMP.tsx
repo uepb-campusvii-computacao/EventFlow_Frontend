@@ -7,12 +7,11 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
-import { useEffect } from 'react';
+import { api } from '@/lib/api';
 
-export function BrikcCardMp() {
-  useEffect(() => {
-    initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
-  }, []);
+initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
+export function BrickCardMp() {
+  
 
   const customization = {
     paymentMethods: {
@@ -43,7 +42,7 @@ export function BrikcCardMp() {
     }
     */
     //fazer chamada no backend
-    console.log(formData);
+    api.post('/lote/:lote_id/register', formData)
   };
   const onError = async (error: any) => {
     console.log(error);
@@ -71,14 +70,11 @@ export function StatusBrickMp({ paymentId }: { paymentId: string }) {
     paymentId, // id do pagamento a ser mostrado
   };
   const onError = async (error: any) => {
-    // callback chamado para todos os casos de erro do Brick
+    
     console.log(error);
   };
   const onReady = async () => {
-    /*
-      Callback chamado quando o Brick estiver pronto.
-      Aqui você pode ocultar loadings do seu site, por exemplo.
-    */
+    
   };
 
   return (
