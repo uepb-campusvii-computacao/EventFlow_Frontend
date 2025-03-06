@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Container } from './Container';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
+import { LogOutIcon } from 'lucide-react';
 
 export function Header() {
   const { data, isFetching } = useAuth();
@@ -34,18 +35,25 @@ export function Header() {
           />
         </Link>
         <NavBar />
-        <MobileNavBar />
+        <MobileNavBar/>
         {data ? (
           <Popover>
-            <PopoverTrigger className="font-mono border rounded-full w-12 h-12 flex items-center justify-center text-center">
+            <PopoverTrigger className="font-mono border-4 rounded-full w-40 h-12 flex items-center  justify-center text-center">
               {isFetching ? '...' : data.initials}
             </PopoverTrigger>
             <PopoverContent>
-              <button onClick={handleToggleLogOut}>Log out</button>
+              <button className='justify-itens-center flex-cols-2  w-40 h-12' onClick={handleToggleLogOut}>
+                <LogOutIcon color="var(--primary)"/> 
+                Sair
+              </button>
             </PopoverContent>
           </Popover>
         ) : (
-          <a href="/sign-in">Login</a>
+
+            <Link to="/sign-in" className= "button-primary">
+              Entrar
+              </Link>
+      
         )}
       </Container>
     </header>

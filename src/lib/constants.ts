@@ -9,19 +9,7 @@ export const navbar_links: { title: string; href: string }[] = [
   {
     title: 'Eventos',
     href: '/eventos',
-  },
-  {
-    title: 'Contrate',
-    href: '#',
-  },
-  {
-    title: 'Buscar evento',
-    href: '#',
-  },
-  {
-    title: 'Documentacao',
-    href: '#',
-  },
+  }
 ];
 
 // Usado na home page, para listar eventos que já passaram pelo Eventflow
