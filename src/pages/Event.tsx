@@ -5,7 +5,7 @@ import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
 import { api } from '@/lib/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -14,10 +14,19 @@ export function Event() {
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
   const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
-  const { data, isFetching } = useUserRegistrationInEvent(
+  const { data, isFetching, refetch } = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
 
+  enum PaymentStatus {
+    PENDENTE = 'PAGAMENTO PENDENTE',
+    CONFIRMADO = 'VER COMPROVANTE',
+    CANCELADO = 'INSCRIÇÃO CANCELADA',
+    EXPIRADO = 'PAGAMENTO EXPIRADO'
+  }
+
+  const statusPagamento = PaymentStatus;
+  
   const [selectedBatch, setSelectedBatch] = useState<string>();
   const [paymentMethod, setPaymentMethod] = useState('pix');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +35,7 @@ export function Event() {
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
 
+  
   const handleSubscribeInEvent = async () => {
     if (!token) {
       return navigate('/sign-in');
@@ -33,19 +43,24 @@ export function Event() {
     if (!selectedBatch) {
       return toast.error('Selecione um lote!');
     }
-
     setIsSubmitting(true);
+    
     try {
       await api.post(`/lote/${selectedBatch}/register`, undefined, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      window.location.reload();
+      
     } catch (error) {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
+      refetch();
       setIsSubmitting(false);
+      navigate(`/pagamentos/${slug}`);
     }
   };
+  useEffect(() => {
+    refetch();
+  }, []);
 
   function BatchButtons() {
     return (
@@ -148,11 +163,14 @@ export function Event() {
                 </div>
               ) : token ? (
                 <>
+  
                   {!data.isSubscribed ? (
                     <InscriptionSection />
                   ) : (
                     <div>
-                      <Link to={`/pagamentos/${slug}`}>Ver comprovante</Link>
+                        <Link className="p-4 rounded-full shadow-lg capitalize data-[status=PENDENTE]:bg-yellow-300 data-[status=CONFIRMADO]:bg-green-300 data-[status=CANCELADO]:bg-red-300" to={`/pagamentos/${slug}`} data-status={data.status_pagamento}>
+                        {statusPagamento[data.status_pagamento as keyof typeof PaymentStatus]}
+                        </Link>
                     </div>
                   )}
                 </>

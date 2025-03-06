@@ -19,7 +19,7 @@ export function BrickCardMp() {
     },
   };
 
-  //pegar o preço do lote
+  //pegar o preço do lote - nao implementado
   const initialization = {
     amount: 100,
   };
