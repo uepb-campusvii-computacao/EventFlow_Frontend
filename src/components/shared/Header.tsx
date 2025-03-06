@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Container } from './Container';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
-import { LogInIcon, LogOutIcon } from 'lucide-react';
+import { LogOutIcon } from 'lucide-react';
 
 interface UserData{
   data : any,
