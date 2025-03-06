@@ -36,10 +36,8 @@ export function useAuth() {
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
 
-  const userQuery = useQuery({
+  return useQuery({
     queryFn: () => fetchUserData(token),
     queryKey: ['user-data'],
   });
-
-  return { userQuery };
 }

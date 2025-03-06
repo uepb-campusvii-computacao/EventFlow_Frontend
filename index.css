@@ -64,7 +64,9 @@
 @layer base {
   * {
     @apply border-border;
+    
   }
+  
   body {
     font-family: 'Poppins';
     @apply bg-background text-foreground;

@@ -14,11 +14,11 @@ const signUpFormSchema = z
     email: z.string().email(),
     nickname: z.string(),
     organization: z.string(),
-    password: z.string().min(8, 'This field must have at least 8 characters'),
+    password: z.string().min(8, 'Este campo deve ter pelo menos 8 caracteres'),
     confirm_password: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "Passwords don't match",
+    message: "As senhas não coincidem",
     path: ['confirm_password'],
   });
 
