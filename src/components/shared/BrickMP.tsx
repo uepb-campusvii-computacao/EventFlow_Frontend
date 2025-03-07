@@ -8,10 +8,18 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
+import { useCookies } from 'react-cookie';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
 
-export function BrickCardMp() {
+export function BrickCardMp({
+  amount,
+  loteId,
+}: {
+  amount: number;
+  loteId: string;
+}) {
+  const [cookies] = useCookies(['token']);
   const customization = {
     paymentMethods: {
       minInstallments: 1,
@@ -21,27 +29,24 @@ export function BrickCardMp() {
 
   //pegar o preço do lote - nao implementado
   const initialization = {
-    amount: 100,
+    amount: amount || 0,
   };
 
   const onSubmit = async (
     formData: ICardPaymentFormData<ICardPaymentBrickPayer>
   ) => {
-    /*
-    {
-      installments: 1,
-      issuer_id: "24",
-      payer: {
-        email: "jonh@gmail.com", 
-        identification: {type: "CPF", number: "12345678900"}
+    const payload = {
+      paymentMethod: 'CARD',
+      paymentData: formData,
+    };
+
+    const response = await api.post(`/lote/${loteId}/register`, payload, {
+      headers: {
+        Authorization: `Bearer ${cookies.token}`,
       },
-      payment_method_id: "master",
-      token: "987982375fg070wsd01919290",
-      transaction_amount: 1
-    }
-    */
-    //fazer chamada no backend
-    api.post('/lote/:lote_id/register', formData);
+    });
+
+    console.log(response.data);
   };
   const onError = async (error: any) => {
     console.log(error);
@@ -58,7 +63,6 @@ export function BrickCardMp() {
 }
 
 export function StatusBrickMp({ paymentId }: { paymentId: string }) {
-
   const initialization = {
     paymentId, // id do pagamento a ser mostrado
   };
@@ -66,10 +70,5 @@ export function StatusBrickMp({ paymentId }: { paymentId: string }) {
     console.log(error);
   };
 
-  return (
-    <StatusScreen
-      initialization={initialization}
-      onError={onError}
-    />
-  );
+  return <StatusScreen initialization={initialization} onError={onError} />;
 }
