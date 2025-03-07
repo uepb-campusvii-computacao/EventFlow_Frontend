@@ -1,6 +1,7 @@
 import { BrickCardMp } from '@/components/shared/BrickMP';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
+import { Button } from '@/components/ui/button';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
@@ -168,9 +169,11 @@ export function Event() {
                     <InscriptionSection />
                   ) : (
                     <div>
-                        <Link className="p-4 rounded-full shadow-lg capitalize data-[status=PENDENTE]:bg-yellow-300 data-[status=CONFIRMADO]:bg-green-300 data-[status=CANCELADO]:bg-red-300" to={`/pagamentos/${slug}`} data-status={data.status_pagamento}>
-                        {statusPagamento[data.status_pagamento as keyof typeof PaymentStatus]}
+                      <Button className="data-[status=PENDENTE]:bg-yellow-300 data-[status=CONFIRMADO]:bg-green-300 data-[status=CANCELADO]:bg-red-300" data-status={data.status_pagamento}>
+                        <Link to={`/pagamentos/${slug}`}>
+                            {statusPagamento[data.status_pagamento as keyof typeof PaymentStatus]}
                         </Link>
+                      </Button>
                     </div>
                   )}
                 </>

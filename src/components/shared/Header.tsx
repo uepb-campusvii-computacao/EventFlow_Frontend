@@ -13,9 +13,9 @@ export function Header() {
   const [, , removeCookie] = useCookies(['token']);
   const navigate = useNavigate();
 
-  function handleToggleLogOut() {
+  async function handleToggleLogOut() {
     removeCookie('token');
-    queryClient.invalidateQueries();
+    await queryClient.invalidateQueries();
     window.localStorage.clear();
     navigate('/');
     window.location.reload()
