@@ -35,7 +35,7 @@ export function Header() {
            <img
             width={90}
             height={90}
-            src="./src/assets/logo-v2.png"
+            src="/logo-v2.png"
             className="flex md:hidden"
             alt="logo"
           />
