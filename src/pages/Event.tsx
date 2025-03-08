@@ -23,12 +23,13 @@ export function Event() {
     PENDENTE = 'PAGAMENTO PENDENTE',
     CONFIRMADO = 'VER COMPROVANTE',
     CANCELADO = 'INSCRIÇÃO CANCELADA',
-    EXPIRADO = 'PAGAMENTO EXPIRADO'
+    EXPIRADO = 'PAGAMENTO EXPIRADO',
   }
 
   const statusPagamento = PaymentStatus;
-  
-  const [selectedBatch, setSelectedBatch] = useState<string>();
+
+  const [selectedBatch, setSelectedBatch] = useState<string>('');
+  const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState('pix');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,7 +37,6 @@ export function Event() {
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
 
-  
   const handleSubscribeInEvent = async () => {
     if (!token) {
       return navigate('/sign-in');
@@ -45,12 +45,11 @@ export function Event() {
       return toast.error('Selecione um lote!');
     }
     setIsSubmitting(true);
-    
+
     try {
       await api.post(`/lote/${selectedBatch}/register`, undefined, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
     } catch (error) {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
@@ -69,7 +68,10 @@ export function Event() {
         {batchs?.map((item) => (
           <button
             key={item.uuid_lote}
-            onClick={() => setSelectedBatch(item.uuid_lote || '')}
+            onClick={() => {
+              setSelectedBatch(item.uuid_lote || '');
+              setSelectedBatchValue(item.preco);
+            }}
             className={`rounded-md shadow-md border sm:w-auto w-full bg-slate-100 p-4 flex flex-col gap-1 ${
               selectedBatch === item.uuid_lote
                 ? 'border-purple-500'
@@ -94,40 +96,44 @@ export function Event() {
           <BatchButtons />
         </div>
 
-        <div>
-          <label>
-            <input
-              type="radio"
-              value="pix"
-              name="paymentMethod"
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              checked={paymentMethod === 'pix'}
-            />{' '}
-            PIX
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="card"
-              name="paymentMethod"
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              checked={paymentMethod === 'card'}
-            />{' '}
-            Cartão
-          </label>
-        </div>
+        {selectedBatchValue > 0 ? (
+          <div>
+            <label>
+              <input
+                type="radio"
+                value="pix"
+                name="paymentMethod"
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                checked={paymentMethod === 'pix'}
+              />{' '}
+              PIX
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="card"
+                name="paymentMethod"
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                checked={paymentMethod === 'card'}
+              />{' '}
+              Cartão
+            </label>
+          </div>
+        ) : null}
 
-        {paymentMethod === 'pix' ? (
-          <button
-            disabled={isSubmitting}
-            onClick={handleSubscribeInEvent}
-            className="rounded-md px-3 py-2 font-semibold text-white text-center bg-purple-500 text-lg hover:bg-purple-700 disabled:bg-purple-900"
-          >
-            Inscreve-se
-          </button>
-        ) : (
-          <BrickCardMp />
-        )}
+        {selectedBatch != '' ? (
+          paymentMethod === 'pix' ? (
+            <button
+              disabled={isSubmitting}
+              onClick={handleSubscribeInEvent}
+              className="rounded-md px-3 py-2 font-semibold text-white text-center bg-purple-500 text-lg hover:bg-purple-700 disabled:bg-purple-900"
+            >
+              Inscreve-se
+            </button>
+          ) : (
+            <BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />
+          )
+        ) : null}
       </div>
     );
   }
@@ -164,7 +170,6 @@ export function Event() {
                 </div>
               ) : token ? (
                 <>
-  
                   {!data.isSubscribed ? (
                     <InscriptionSection />
                   ) : (
