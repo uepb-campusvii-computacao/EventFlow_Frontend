@@ -13,9 +13,9 @@ export function Header() {
   const [, , removeCookie] = useCookies(['token']);
   const navigate = useNavigate();
 
-  function handleToggleLogOut() {
+  async function handleToggleLogOut() {
     removeCookie('token');
-    queryClient.invalidateQueries();
+    await queryClient.invalidateQueries();
     window.localStorage.clear();
     navigate('/');
     window.location.reload()
@@ -35,7 +35,7 @@ export function Header() {
            <img
             width={90}
             height={90}
-            src="./src/assets/logo-v2.png"
+            src="/logo-v2.png"
             className="flex md:hidden"
             alt="logo"
           />
