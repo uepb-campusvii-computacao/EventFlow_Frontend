@@ -9,10 +9,13 @@ export function Payment() {
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
   const {
-    data: { id_payment_mercado_pago, isSubscribed },
+    data,
     isFetching,
     error,
   } = useUserRegistrationInEvent(findEvent?.uuid_evento);
+
+  const id_payment_mercado_pago = data?.id_payment_mercado_pago;
+  const isSubscribed = data?.isSubscribed;
 
   const navigate = useNavigate();
 
