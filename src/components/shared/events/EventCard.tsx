@@ -18,7 +18,7 @@ export function EventCard({
       className="flex h-fit flex-col overflow-hidden rounded-md border shadow-md "
     >
       <img
-        className="rounded-t-md transition-transform duration-300 hover:scale-110"
+        className="rounded-t-md transition-transform duration-300 hover:scale-110  aspect-video"
         src={image_url}
         alt={name}
       />
