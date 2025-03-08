@@ -9,7 +9,6 @@ async function getUserRegistrationInEvent(token: string, eventId: string) {
         Authorization: `Bearer ${token}`,
       },
     });
-
     return response.data;
   } catch (error) {
     console.error('Erro ao verificar inscrição no evento:', error);
@@ -22,7 +21,7 @@ export function useUserRegistrationInEvent(eventId?: string) {
   const token = cookies.token;
 
   return useQuery({
-    queryFn: () => (eventId && token ? getUserRegistrationInEvent(token, eventId) : Promise.resolve(false)),
+    queryFn: () => (eventId && token ? getUserRegistrationInEvent(token, eventId) : Promise.reject(new Error('Token ou eventId não informado'))),
     queryKey: ['user-registration', eventId],
     enabled: !!eventId && !!token,
   });
