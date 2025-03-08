@@ -21,13 +21,12 @@ export function Event() {
 
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
-    CONFIRMADO = 'VER COMPROVANTE',
+    REALIZADO = 'VER COMPROVANTE',
     CANCELADO = 'INSCRIÇÃO CANCELADA',
     EXPIRADO = 'PAGAMENTO EXPIRADO',
   }
 
   const statusPagamento = PaymentStatus;
-
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState('pix');
@@ -61,7 +60,6 @@ export function Event() {
   useEffect(() => {
     refetch();
   }, []);
-
   function BatchButtons() {
     return (
       <>
@@ -174,7 +172,8 @@ export function Event() {
                     <InscriptionSection />
                   ) : (
                     <div>
-                      <Button className="data-[status=PENDENTE]:bg-yellow-300 data-[status=CONFIRMADO]:bg-green-300 data-[status=CANCELADO]:bg-red-300" data-status={data.status_pagamento}>
+                      <Button className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300" data-status={data.status_pagamento}>
+                        
                         <Link to={`/pagamentos/${slug}`}>
                             {statusPagamento[data.status_pagamento as keyof typeof PaymentStatus]}
                         </Link>
