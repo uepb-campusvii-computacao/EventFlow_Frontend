@@ -1,14 +1,14 @@
 import { Input } from '@/components/ui/input';
 import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { cpf } from 'cpf-cnpj-validator';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { cpf } from 'cpf-cnpj-validator';
-import ReactInputMask from 'react-input-mask';
+import MaskedInput from '../MaskedInput';
 
 const signUpFormSchema = z
   .object({
@@ -21,34 +21,24 @@ const signUpFormSchema = z
     confirm_password: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "As senhas não coincidem",
+    message: 'As senhas não coincidem',
     path: ['confirm_password'],
   })
   .refine((data) => cpf.isValid(limparCPF(data.cpf)) == true, {
-    message: "CPF não é valido",
+    message: 'CPF não é valido',
     path: ['cpf'],
-  },
+  });
 
-  
-);
-
- function limparCPF(cpf:string) {
- 
-  return cpf.replace(/[^\d]/g, ''); 
-  
+function limparCPF(cpf: string) {
+  return cpf.replace(/[^\d]/g, '');
 }
- 
-  
 
 type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
-
-
 
 export function SignUpForm() {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisiblePasswordConfirmation, setIsVisiblePasswordConfirmation] =
     useState(false);
- 
 
   const navigate = useNavigate();
 
@@ -61,18 +51,21 @@ export function SignUpForm() {
   });
 
   async function handleRegisterUser(data: SignUpFormSchema) {
-    console.log(data.cpf)
+    console.log(data.cpf);
     try {
       await api.post('/register', data);
-      navigate("/sign-in")
+      navigate('/sign-in');
     } catch (error) {
-      checkError(error, 
+      checkError(
+        error,
         (message) => toast.error(message),
-        () => toast.error('Erro ao buscar atividades: ' + error || 'Ocorreu um erro.')
+        () =>
+          toast.error(
+            'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
+          )
       );
     }
   }
-
 
   return (
     <form
@@ -95,16 +88,15 @@ export function SignUpForm() {
       <div className="flex w-full flex-col gap-4">
         {errors.cpf && (
           <div className="text-sm text-red-500">{errors.cpf.message}</div>
-            )}
-        <ReactInputMask
-        mask="999.999.999-99"
-        placeholder="CPF"
-        type="text"
-        className={`${errors.name ? 'focus:!ring-red-500' : 'focus:!ring-purple-500 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}`}
-        {...register('cpf')}
+        )}
+        <MaskedInput
+          mask="999.999.999-99"
+          placeholder="CPF"
+          type="text"
+          {...register('cpf')}
         />
       </div>
-        
+
       <div>
         {errors.email && (
           <div className="text-sm text-red-500">{errors.email.message}</div>
