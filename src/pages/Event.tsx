@@ -2,6 +2,7 @@ import { BrickCardMp } from '@/components/shared/BrickMP';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
 import { Button } from '@/components/ui/button';
+import { Toggle } from '@/components/ui/toggle';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
@@ -29,7 +30,7 @@ export function Event() {
   const statusPagamento = PaymentStatus;
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState('pix');
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
@@ -89,37 +90,34 @@ export function Event() {
 
   function InscriptionSection() {
     return (
-      <div className="rounded-md border-2 bg-white p-8 shadow-md w-full gap-4 flex flex-col items-center justify-center">
+      <div className="rounded-md border-2 bg-white p-8 shadow-md w-full gap-4 flex flex-col  items-center justify-center">
         <div className="flex gap-2 flex-wrap w-full">
           <BatchButtons />
         </div>
 
         {selectedBatchValue > 0 ? (
-          <div>
-            <label>
-              <input
-                type="radio"
-                value="pix"
-                name="paymentMethod"
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                checked={paymentMethod === 'pix'}
-              />{' '}
-              PIX
-            </label>
-            <label>
-              <input
-                type="radio"
-                value="card"
-                name="paymentMethod"
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                checked={paymentMethod === 'card'}
-              />{' '}
-              Cartão
-            </label>
+          <div className='grid grid-cols-2 gap-5 ' >
+            <Toggle onClick={() => setPaymentMethod('pix')}  className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
+             paymentMethod === "pix" ? "border-red-600 shadow-lg shadow-red-600" : ""
+        }`}>
+                  Pix
+            </Toggle>
+            <Toggle onClick={() => setPaymentMethod('card')} className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
+            paymentMethod === "card" ? "border-red-600 shadow-lg shadow-red-600" : ""
+           }`}>
+                  Cartão
+            </Toggle>
           </div>
-        ) : null}
+        ) :  <button
+              disabled={isSubmitting}
+              onClick={handleSubscribeInEvent}
+              className="rounded-md px-3 py-2 font-semibold text-white text-center bg-purple-500 text-lg hover:bg-purple-700 disabled:bg-purple-900"
+              >
+                Inscreve-se
+              </button>
+       }
 
-        {selectedBatch != '' ? (
+        {selectedBatch != '' && selectedBatchValue > 0 ?  (
           paymentMethod === 'pix' ? (
             <button
               disabled={isSubmitting}
@@ -128,10 +126,10 @@ export function Event() {
             >
               Inscreve-se
             </button>
-          ) : (
+          ) : paymentMethod === 'card'? (
             <BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />
-          )
-        ) : null}
+          ):null
+        ) : null }
       </div>
     );
   }
