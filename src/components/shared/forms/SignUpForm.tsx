@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { cpf } from 'cpf-cnpj-validator';
-import { MaskedInput } from '../maskinput';
+import ReactInputMask from 'react-input-mask';
 
 const signUpFormSchema = z
   .object({
@@ -25,7 +25,7 @@ const signUpFormSchema = z
     path: ['confirm_password'],
   })
   .refine((data) => cpf.isValid(limparCPF(data.cpf)) == true, {
-    message: "Cpf não é valido",
+    message: "CPF não é valido",
     path: ['cpf'],
   },
 
@@ -34,7 +34,7 @@ const signUpFormSchema = z
 
  function limparCPF(cpf:string) {
  
-  return cpf.replace(/\D/g, ''); 
+  return cpf.replace(/[^\d]/g, ''); 
   
 }
  
@@ -61,6 +61,7 @@ export function SignUpForm() {
   });
 
   async function handleRegisterUser(data: SignUpFormSchema) {
+    console.log(data.cpf)
     try {
       await api.post('/register', data);
       navigate("/sign-in")
@@ -90,21 +91,21 @@ export function SignUpForm() {
           {...register('name')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-4">
-    
-          {errors.cpf && (
-            <div className="text-sm text-red-500">{errors.cpf.message}</div>
-             )}
-          < MaskedInput
-            className={`${errors.cpf ? 'focus:!ring-red-500' : 'focus:!ring-purple-500'}`}
-            required
-            placeholder="CPF"
-            mask="000.000.000-00"
-            {...register('cpf')}
-            />
-
-
-
+        {errors.cpf && (
+          <div className="text-sm text-red-500">{errors.cpf.message}</div>
+            )}
+        <ReactInputMask
+        mask="999.999.999-99"
+        placeholder="CPF"
+        type="text"
+        className={`${errors.name ? 'focus:!ring-red-500' : 'focus:!ring-purple-500 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}`}
+        {...register('cpf')}
+        />
+      </div>
+        
+      <div>
         {errors.email && (
           <div className="text-sm text-red-500">{errors.email.message}</div>
         )}
@@ -116,6 +117,7 @@ export function SignUpForm() {
           {...register('email')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.nickname && (
           <div className="text-sm text-red-500">{errors.nickname.message}</div>
@@ -128,6 +130,7 @@ export function SignUpForm() {
           {...register('nickname')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.organization && (
           <div className="text-sm text-red-500">
@@ -142,13 +145,11 @@ export function SignUpForm() {
           {...register('organization')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.password && (
           <div className="text-sm text-red-500">{errors.password.message}</div>
         )}
-       
-       
-        
         <div className="relative flex items-center justify-center">
           <Input
             className={`${errors.password ? 'focus:!ring-red-500' : 'focus:!ring-purple-500'}`}
