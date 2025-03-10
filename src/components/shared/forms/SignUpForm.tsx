@@ -7,11 +7,14 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { cpf } from 'cpf-cnpj-validator';
+import { MaskedInput } from '../maskinput';
 
 const signUpFormSchema = z
   .object({
     name: z.string(),
-    email: z.string().email(),
+    email: z.string().email('email invalido'),
+    cpf: z.string(),
     nickname: z.string(),
     organization: z.string(),
     password: z.string().min(8, 'Este campo deve ter pelo menos 8 caracteres'),
@@ -20,14 +23,32 @@ const signUpFormSchema = z
   .refine((data) => data.password === data.confirm_password, {
     message: "As senhas não coincidem",
     path: ['confirm_password'],
-  });
+  })
+  .refine((data) => cpf.isValid(limparCPF(data.cpf)) == true, {
+    message: "Cpf não é valido",
+    path: ['cpf'],
+  },
+
+  
+);
+
+ function limparCPF(cpf:string) {
+ 
+  return cpf.replace(/\D/g, ''); 
+  
+}
+ 
+  
 
 type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
+
+
 
 export function SignUpForm() {
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [isVisiblePasswordConfirmation, setIsVisiblePasswordConfirmation] =
     useState(false);
+ 
 
   const navigate = useNavigate();
 
@@ -51,6 +72,7 @@ export function SignUpForm() {
     }
   }
 
+
   return (
     <form
       onSubmit={handleSubmit(handleRegisterUser)}
@@ -68,7 +90,21 @@ export function SignUpForm() {
           {...register('name')}
         />
       </div>
-      <div className="flex w-full flex-col gap-1">
+      <div className="flex w-full flex-col gap-4">
+    
+          {errors.cpf && (
+            <div className="text-sm text-red-500">{errors.cpf.message}</div>
+             )}
+          < MaskedInput
+            className={`${errors.cpf ? 'focus:!ring-red-500' : 'focus:!ring-purple-500'}`}
+            required
+            placeholder="CPF"
+            mask="000.000.000-00"
+            {...register('cpf')}
+            />
+
+
+
         {errors.email && (
           <div className="text-sm text-red-500">{errors.email.message}</div>
         )}
@@ -110,6 +146,9 @@ export function SignUpForm() {
         {errors.password && (
           <div className="text-sm text-red-500">{errors.password.message}</div>
         )}
+       
+       
+        
         <div className="relative flex items-center justify-center">
           <Input
             className={`${errors.password ? 'focus:!ring-red-500' : 'focus:!ring-purple-500'}`}
