@@ -22,7 +22,7 @@ export function Header() {
   }
 
   return (
-    <header className="w-full border-b-[4px] border-b-accent">
+    <header className="w-full border-b-[1px] border-b-purple-500">
       <Container className="flex items-center justify-between h-16">
         <Link to="/">
           <img

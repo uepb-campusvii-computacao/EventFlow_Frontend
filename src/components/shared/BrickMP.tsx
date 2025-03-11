@@ -25,6 +25,13 @@ export function BrickCardMp({
       minInstallments: 1,
       maxInstallments: 5,
     },
+    visual:{
+      style: {
+        customVariables: {
+          baseColor: 'red'
+        }
+      }
+    }
   };
 
   //pegar o preço do lote - nao implementado

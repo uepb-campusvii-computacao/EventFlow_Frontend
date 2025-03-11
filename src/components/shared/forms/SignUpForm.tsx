@@ -61,7 +61,6 @@ export function SignUpForm() {
   });
 
   async function handleRegisterUser(data: SignUpFormSchema) {
-    console.log(data.cpf)
     try {
       await api.post('/register', data);
       navigate("/sign-in")
