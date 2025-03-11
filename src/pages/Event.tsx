@@ -7,10 +7,28 @@ import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
 import { api } from '@/lib/api';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
+
+const guestSchema = z.object({
+  name: z.string().nonempty('Nome é Obrigatório!'),
+  cpf: z.string().nonempty('CPF é Obrigatório!'),
+  email: z.string().email('Email invalido').nonempty('Email é Obrigatório!'),
+  organization: z.string(),
+  nickname: z.string(),
+});
+
+const registerGuestSchema = z.object({
+  guests: z.array(guestSchema).max(2),
+});
+
+type RegisterGuestSchema = z.infer<typeof registerGuestSchema>;
 
 export function Event() {
   const { slug } = useParams();
@@ -19,6 +37,19 @@ export function Event() {
   const { data, isFetching, refetch } = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting: isSubmittingForm },
+  } = useForm<RegisterGuestSchema>({
+    resolver: zodResolver(registerGuestSchema),
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'guests',
+  });
 
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
@@ -32,10 +63,42 @@ export function Event() {
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [usersIds, setUsersIds] = useState<string[]>([]);
 
   const navigate = useNavigate();
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
+
+  const handleRegisterGuests = async (data: RegisterGuestSchema) => {
+    if (!token) {
+      return navigate('/sign-in');
+    }
+    if (!selectedBatch) {
+      return toast.error('Selecione um lote!');
+    }
+    setIsSubmitting(true);
+
+    try {
+      const responseArray = await Promise.all(
+        data.guests.map((guest) => {
+          return api.post(`/user/registerGuest`, guest, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        })
+      );
+
+      const usersIds = responseArray.map((response: AxiosResponse) => {
+        return response.data.uuid_usuario;
+      });
+      setUsersIds(usersIds);
+    } catch (error) {
+      toast.error('Erro ao se inscrever no evento!');
+    } finally {
+      refetch();
+      setIsSubmitting(false);
+      navigate(`/pagamentos/${slug}`);
+    }
+  };
 
   const handleSubscribeInEvent = async () => {
     if (!token) {
@@ -47,7 +110,7 @@ export function Event() {
     setIsSubmitting(true);
 
     try {
-      await api.post(`/lote/${selectedBatch}/register`, undefined, {
+      await api.post(`/lote/${selectedBatch}/register`, usersIds, {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
@@ -58,9 +121,11 @@ export function Event() {
       navigate(`/pagamentos/${slug}`);
     }
   };
+
   useEffect(() => {
     refetch();
   }, []);
+
   function BatchButtons() {
     return (
       <>
@@ -88,12 +153,110 @@ export function Event() {
     );
   }
 
+  function MultipleUsers() {
+    return (
+      <form
+        onSubmit={handleSubmit(handleRegisterGuests)}
+        className="flex flex-col gap-4"
+      >
+        <button
+          type="button"
+          onClick={() => {
+            if (fields.length < 2) {
+              append({
+                name: '',
+                cpf: '',
+                email: '',
+                organization: '',
+                nickname: '',
+              });
+            }
+          }}
+        >
+          Adicionar Convidado
+        </button>
+        {fields.map((field, index) => (
+          <div key={field.id} className="flex flex-col gap-1">
+            <h1>Convidado {index + 1}</h1>
+            {errors.guests?.[index]?.name && (
+              <div className="text-sm text-red-500">
+                {errors.guests[index].name?.message}
+              </div>
+            )}
+            <input
+              className="focus:ring-purple-500"
+              placeholder="Nome completo"
+              type="text"
+              {...register(`guests.${index}.name` as const)}
+            />
+            {errors.guests?.[index]?.cpf && (
+              <div className="text-sm text-red-500">
+                {errors.guests[index].cpf?.message}
+              </div>
+            )}
+            <input
+              className="focus:ring-purple-500"
+              placeholder="CPF"
+              type="text"
+              {...register(`guests.${index}.cpf` as const)}
+            />
+            {errors.guests?.[index]?.email && (
+              <div className="text-sm text-red-500">
+                {errors.guests[index].email?.message}
+              </div>
+            )}
+            <input
+              className="focus:ring-purple-500"
+              placeholder="E-mail"
+              type="email"
+              {...register(`guests.${index}.email` as const)}
+            />
+            {errors.guests?.[index]?.nickname && (
+              <div className="text-sm text-red-500">
+                {errors.guests[index].nickname?.message}
+              </div>
+            )}
+            <input
+              className="focus:ring-purple-500"
+              placeholder="Nome do crachá"
+              type="text"
+              {...register(`guests.${index}.nickname` as const)}
+            />
+            {errors.guests?.[index]?.organization && (
+              <div className="text-sm text-red-500">
+                {errors.guests[index].organization?.message}
+              </div>
+            )}
+            <input
+              className="focus:ring-purple-500"
+              placeholder="Instituição"
+              type="text"
+              {...register(`guests.${index}.organization` as const)}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              Remover
+            </button>
+          </div>
+        ))}
+        <button
+          disabled={isSubmittingForm}
+          type="submit"
+          className="mt-4 flex items-center justify-center rounded-md bg-purple-500 px-3 py-2 text-center text-white transition-colors hover:bg-purple-600 disabled:bg-purple-800"
+        >
+          {isSubmittingForm ? 'Carregando...' : 'Confirmar Convidados'}
+        </button>
+      </form>
+    );
+  }
+
   function InscriptionSection() {
     return (
       <div className="rounded-md border-2 bg-white p-8 shadow-md w-full gap-4 flex flex-col  items-center justify-center">
         <div className="flex gap-2 flex-wrap w-full">
           <BatchButtons />
         </div>
+
+        <MultipleUsers />
 
         {selectedBatchValue > 0 ? (
           <div className='grid grid-cols-2 gap-5 ' >
@@ -133,6 +296,7 @@ export function Event() {
       </div>
     );
   }
+
   return (
     <>
       <Header />
@@ -170,10 +334,16 @@ export function Event() {
                     <InscriptionSection />
                   ) : (
                     <div>
-                      <Button className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300" data-status={data.status_pagamento}>
-                        
+                      <Button
+                        className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
+                        data-status={data.status_pagamento}
+                      >
                         <Link to={`/pagamentos/${slug}`}>
-                            {statusPagamento[data.status_pagamento as keyof typeof PaymentStatus]}
+                          {
+                            statusPagamento[
+                              data.status_pagamento as keyof typeof PaymentStatus
+                            ]
+                          }
                         </Link>
                       </Button>
                     </div>
