@@ -1,26 +1,37 @@
 import { Input } from '@/components/ui/input';
 import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { cpf } from 'cpf-cnpj-validator';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import MaskedInput from '../MaskedInput';
 
 const signUpFormSchema = z
   .object({
     name: z.string(),
-    email: z.string().email(),
+    email: z.string().email('email invalido'),
+    cpf: z.string(),
     nickname: z.string(),
     organization: z.string(),
     password: z.string().min(8, 'Este campo deve ter pelo menos 8 caracteres'),
     confirm_password: z.string(),
   })
   .refine((data) => data.password === data.confirm_password, {
-    message: "As senhas não coincidem",
+    message: 'As senhas não coincidem',
     path: ['confirm_password'],
+  })
+  .refine((data) => cpf.isValid(limparCPF(data.cpf)) == true, {
+    message: 'CPF não é valido',
+    path: ['cpf'],
   });
+
+function limparCPF(cpf: string) {
+  return cpf.replace(/[^\d]/g, '');
+}
 
 type SignUpFormSchema = z.infer<typeof signUpFormSchema>;
 
@@ -40,13 +51,18 @@ export function SignUpForm() {
   });
 
   async function handleRegisterUser(data: SignUpFormSchema) {
+    console.log(data.cpf);
     try {
       await api.post('/register', data);
-      navigate("/sign-in")
+      navigate('/sign-in');
     } catch (error) {
-      checkError(error, 
+      checkError(
+        error,
         (message) => toast.error(message),
-        () => toast.error('Erro ao buscar atividades: ' + error || 'Ocorreu um erro.')
+        () =>
+          toast.error(
+            'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
+          )
       );
     }
   }
@@ -68,7 +84,20 @@ export function SignUpForm() {
           {...register('name')}
         />
       </div>
-      <div className="flex w-full flex-col gap-1">
+
+      <div className="flex w-full flex-col gap-4">
+        {errors.cpf && (
+          <div className="text-sm text-red-500">{errors.cpf.message}</div>
+        )}
+        <MaskedInput
+          mask="999.999.999-99"
+          placeholder="CPF"
+          type="text"
+          {...register('cpf')}
+        />
+      </div>
+
+      <div>
         {errors.email && (
           <div className="text-sm text-red-500">{errors.email.message}</div>
         )}
@@ -80,6 +109,7 @@ export function SignUpForm() {
           {...register('email')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.nickname && (
           <div className="text-sm text-red-500">{errors.nickname.message}</div>
@@ -92,6 +122,7 @@ export function SignUpForm() {
           {...register('nickname')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.organization && (
           <div className="text-sm text-red-500">
@@ -106,6 +137,7 @@ export function SignUpForm() {
           {...register('organization')}
         />
       </div>
+
       <div className="flex w-full flex-col gap-1">
         {errors.password && (
           <div className="text-sm text-red-500">{errors.password.message}</div>
