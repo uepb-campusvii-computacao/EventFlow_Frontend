@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -11,11 +11,17 @@ const checkError = (
   onAxiosError: CheckErrorCallback,
   onOtherError: CheckErrorCallback
 ) => {
-  console.log(error);
   if (axios.isAxiosError(error)) {
-    const message = error.response?.data?.message || error.response?.data || 'Ocorreu um erro.';
+    const message =
+      error.response?.data?.message ||
+      error.response?.data ||
+      'Ocorreu um erro.';
     onAxiosError(message);
-  } else if (typeof error === 'object' && error !== null && 'message' in error) {
+  } else if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error
+  ) {
     const message = (error as { message: string }).message;
     onOtherError(message);
   } else {
