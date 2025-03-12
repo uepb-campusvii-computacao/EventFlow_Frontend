@@ -6,10 +6,14 @@ import { Toggle } from '@/components/ui/toggle';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
-import { api } from '@/lib/api';
+import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  ICardPaymentBrickPayer,
+  ICardPaymentFormData,
+} from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
 import { AxiosResponse } from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -41,11 +45,11 @@ export function Event() {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting: isSubmittingForm },
+    formState: { errors },
   } = useForm<RegisterGuestSchema>({
     resolver: zodResolver(registerGuestSchema),
   });
-  console.log(findEvent?.date);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'guests',
@@ -61,15 +65,22 @@ export function Event() {
   const statusPagamento = PaymentStatus;
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [usersIds, setUsersIds] = useState<string[]>([]);
+
+  const usersIds = useRef<string[]>([]);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const navigate = useNavigate();
   const [cookies] = useCookies(['token']);
   const token = cookies.token;
-  
-  const handleRegisterGuests = async (data: RegisterGuestSchema) => {
+
+  const handleRegisterGuests = async (
+    data: RegisterGuestSchema,
+    e?: React.BaseSyntheticEvent
+  ) => {
+    e?.preventDefault();
+
     if (!token) {
       return navigate('/sign-in');
     }
@@ -77,6 +88,10 @@ export function Event() {
       return toast.error('Selecione um lote!');
     }
     setIsSubmitting(true);
+
+    if (data.guests.length === 0 && paymentMethod == 'pix') {
+      handleSubscribeInEvent();
+    }
 
     try {
       const responseArray = await Promise.all(
@@ -87,20 +102,29 @@ export function Event() {
         })
       );
 
-      const usersIds = responseArray.map((response: AxiosResponse) => {
-        return response.data.uuid_usuario;
+      const responseIds = responseArray.map((response: AxiosResponse) => {
+        return response.data.uuid_user;
       });
-      setUsersIds(usersIds);
+
+      usersIds.current = responseIds;
+
+      if (paymentMethod == 'pix') {
+        handleSubscribeInEvent();
+      }
     } catch (error) {
-      toast.error('Erro ao se inscrever no evento!');
+      checkError(
+        error,
+        (message) => toast.error(message),
+        () => toast.error('Erro ao se inscrever no evento!')
+      );
     } finally {
-      refetch();
       setIsSubmitting(false);
-      navigate(`/pagamentos/${slug}`);
     }
   };
 
-  const handleSubscribeInEvent = async () => {
+  const handleSubscribeInEvent = async (
+    paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>
+  ) => {
     if (!token) {
       return navigate('/sign-in');
     }
@@ -109,10 +133,24 @@ export function Event() {
     }
     setIsSubmitting(true);
 
+    let payload: {
+      usersIds?: string[];
+      paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>;
+      atividades?: string[];
+    } = paymentData ? { paymentData: paymentData } : {};
+
     try {
-      await api.post(`/lote/${selectedBatch}/register`, usersIds, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      if (usersIds.current.length !== 0) {
+        payload.usersIds = usersIds.current;
+
+        await api.post(`/lote/${selectedBatch}/register-multiple`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        await api.post(`/lote/${selectedBatch}/register`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
     } catch (error) {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
@@ -158,6 +196,7 @@ export function Event() {
       <form
         onSubmit={handleSubmit(handleRegisterGuests)}
         className="flex flex-col gap-4"
+        ref={formRef}
       >
         <button
           type="button"
@@ -238,13 +277,6 @@ export function Event() {
             </button>
           </div>
         ))}
-        <button
-          disabled={isSubmittingForm}
-          type="submit"
-          className="mt-4 flex items-center justify-center rounded-md bg-red-500 px-3 py-2 text-center text-white transition-colors hover:bg-red-600 disabled:bg-red-800"
-        >
-          {isSubmittingForm ? 'Carregando...' : 'Confirmar Convidados'}
-        </button>
       </form>
     );
   }
@@ -259,35 +291,51 @@ export function Event() {
         <MultipleUsers />
 
         {selectedBatchValue > 0 ? (
-          <div className='grid grid-cols-2 gap-5 ' >
-            <Toggle onClick={() => setPaymentMethod('pix')}  className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
-             paymentMethod === "pix" ? "border-red-600 shadow-lg shadow-red-600" : ""
-        }`}>
-                  Pix
+          <div className="grid grid-cols-2 gap-5 ">
+            <Toggle
+              onClick={() => setPaymentMethod('pix')}
+              className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
+                paymentMethod === 'pix'
+                  ? 'border-red-600 shadow-lg shadow-red-600'
+                  : ''
+              }`}
+            >
+              Pix
             </Toggle>
-            <Toggle onClick={() => setPaymentMethod('card')} className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
-            paymentMethod === "card" ? "border-red-600 shadow-lg shadow-red-600" : ""
-           }`}>
-                  Cartão
+            <Toggle
+              onClick={() => setPaymentMethod('card')}
+              className={`border-[1px] border-black px-4 py-2 transition-all duration-300 ${
+                paymentMethod === 'card'
+                  ? 'border-red-600 shadow-lg shadow-red-600'
+                  : ''
+              }`}
+            >
+              Cartão
             </Toggle>
           </div>
-        ) :  null
-       }
+        ) : null}
 
-        {paymentMethod != '' ?  (
+        {paymentMethod != '' ? (
           paymentMethod === 'pix' ? (
             <button
               disabled={isSubmitting}
-              onClick={handleSubscribeInEvent}
+              onClick={() => {
+                formRef.current?.dispatchEvent(
+                  new window.Event('submit', {
+                    cancelable: true,
+                    bubbles: true,
+                  })
+                );
+              }}
               className="rounded-md px-3 py-2 font-semibold text-white text-center bg-red-500 text-lg hover:bg-red-700 disabled:bg-red-900"
             >
               Inscrever-se
             </button>
-          ) :  (
-            <BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />
+          ) : (
+            // falta implementar a multi venda com cartao
+            <BrickCardMp amount={selectedBatchValue * (fields.length + 1)} />
           )
-        ) : null
-        }
+        ) : null}
       </div>
     );
   }
@@ -295,65 +343,73 @@ export function Event() {
   return (
     <>
       <Header />
-      <div style={{ backgroundImage: findEvent?.background_img_url ? `url(${findEvent?.background_img_url})` : "#ffffff" }} className='pt-8'>
-      <Container className='rounded-xl bg-white'>
-        <main className="flex min-h-dvh w-full flex-col items-center gap-4 pb-16 pt-8">
-          <div>
-            <img
-              className="w-full h-auto p-10"
-              src={findEvent?.banner_img_url}
-              alt="Banner do evento"
-              width={160}
-            />
+      <div
+        style={{
+          backgroundImage: findEvent?.background_img_url
+            ? `url(${findEvent?.background_img_url})`
+            : '#ffffff',
+        }}
+        className="pt-8"
+      >
+        <Container className="rounded-xl bg-white">
+          <main className="flex min-h-dvh w-full flex-col items-center gap-4 pb-16 pt-8">
+            <div>
+              <img
+                className="w-full h-auto p-10"
+                src={findEvent?.banner_img_url}
+                alt="Banner do evento"
+                width={160}
+              />
 
-            {findEvent?.conteudo && (
-              <div className="bg-white p-8 w-full">
-                <div
-                  className="w-full prose-sm"
-                  dangerouslySetInnerHTML={{ __html: findEvent?.conteudo }}
-                ></div>
-              </div>
-            )}
+              {findEvent?.conteudo && (
+                <div className="bg-white p-8 w-full">
+                  <div
+                    className="w-full prose-sm"
+                    dangerouslySetInnerHTML={{ __html: findEvent?.conteudo }}
+                  ></div>
+                </div>
+              )}
 
-            {isFetching ? (
-              <div>Carregando...</div>
-            ) : (
-              <>
-                {new Date() >= new Date(findEvent?.date || '') ? (
-                  <div className="w-full px-8 bg-white justify-center p-8 flex-col gap-4 sm:gap-16 sm:flex-row">
-                    <h1 className="text-center text-2xl font-semibold">
-                      Inscrições <span className="text-red-500">ENCERRADAS</span>!
-                    </h1>
-                  </div>
-                ) : token ? (
-                  <>
-                    {!data.isSubscribed ? (
-                      <InscriptionSection />
-                    ) : (
-                      <div>
-                        <Button
-                          className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
-                          data-status={data.status_pagamento}
-                        >
-                          <Link to={`/pagamentos/${slug}`}>
-                            {
-                              statusPagamento[
-                                data.status_pagamento as keyof typeof PaymentStatus
-                              ]
-                            }
-                          </Link>
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link to="/sign-in">Faça o login</Link>
-                )}
-              </>
-            )}
-          </div>
-        </main>
-      </Container>
+              {isFetching ? (
+                <div>Carregando...</div>
+              ) : (
+                <>
+                  {new Date() >= new Date(findEvent?.date || '') ? (
+                    <div className="w-full px-8 bg-white justify-center p-8 flex-col gap-4 sm:gap-16 sm:flex-row">
+                      <h1 className="text-center text-2xl font-semibold">
+                        Inscrições{' '}
+                        <span className="text-red-500">ENCERRADAS</span>!
+                      </h1>
+                    </div>
+                  ) : token ? (
+                    <>
+                      {!data.isSubscribed ? (
+                        <InscriptionSection />
+                      ) : (
+                        <div>
+                          <Button
+                            className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
+                            data-status={data.status_pagamento}
+                          >
+                            <Link to={`/pagamentos/${slug}`}>
+                              {
+                                statusPagamento[
+                                  data.status_pagamento as keyof typeof PaymentStatus
+                                ]
+                              }
+                            </Link>
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link to="/sign-in">Faça o login</Link>
+                  )}
+                </>
+              )}
+            </div>
+          </main>
+        </Container>
       </div>
     </>
   );

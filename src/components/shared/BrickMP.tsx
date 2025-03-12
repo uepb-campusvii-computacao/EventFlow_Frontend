@@ -1,4 +1,3 @@
-import { api } from '@/lib/api';
 import {
   CardPayment,
   initMercadoPago,
@@ -8,30 +7,22 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
-import { useCookies } from 'react-cookie';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
 
-export function BrickCardMp({
-  amount,
-  loteId,
-}: {
-  amount: number;
-  loteId: string;
-}) {
-  const [cookies] = useCookies(['token']);
+export function BrickCardMp({ amount }: { amount: number }) {
   const customization = {
     paymentMethods: {
       minInstallments: 1,
       maxInstallments: 5,
     },
-    visual:{
+    visual: {
       style: {
         customVariables: {
-          baseColor: 'red'
-        }
-      }
-    }
+          baseColor: 'red',
+        },
+      },
+    },
   };
 
   //pegar o preço do lote - nao implementado
@@ -41,20 +32,7 @@ export function BrickCardMp({
 
   const onSubmit = async (
     formData: ICardPaymentFormData<ICardPaymentBrickPayer>
-  ) => {
-    const payload = {
-      paymentMethod: 'CARD',
-      paymentData: formData,
-    };
-
-    const response = await api.post(`/lote/${loteId}/register`, payload, {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    });
-
-    console.log(response.data);
-  };
+  ) => {};
   const onError = async (error: any) => {
     console.log(error);
   };
