@@ -1,6 +1,5 @@
 import { api } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
-import { useCookies } from 'react-cookie';
 
 function generateInitials(name: string) {
   const words = name.trim().split(' ');
@@ -14,17 +13,9 @@ function generateInitials(name: string) {
   }
 }
 
-async function fetchUserData(token: string | undefined) {
-  if (!token) {
-    throw new Error('No token available');
-  }
-
+export async function fetchUserData() {
   try {
-    const response = await api.get('/user', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get('/user');
 
     return { ...response.data, initials: generateInitials(response.data.nome) };
   } catch (err) {
@@ -33,13 +24,8 @@ async function fetchUserData(token: string | undefined) {
 }
 
 export function useAuth() {
-  const [cookies] = useCookies(['token']);
-  const token = cookies.token;
-
-  const userQuery = useQuery({
-    queryFn: () => fetchUserData(token),
+  return useQuery({
+    queryFn: fetchUserData,
     queryKey: ['user-data'],
   });
-
-  return { userQuery };
 }

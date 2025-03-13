@@ -32,8 +32,6 @@
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
@@ -42,27 +40,32 @@
     @apply bg-background text-foreground;
   }
 
-  .button-primary{
+  .button-primary {
     @apply rounded-lg bg-purple-700 px-3 py-2 text-center text-lg font-semibold text-white shadow-md transition-colors hover:bg-purple-900;
   }
 
-  .button-secondary{
+  .button-secondary {
     @apply rounded-lg border border-purple-700 bg-white px-3 py-2 text-center text-lg font-semibold text-purple-700 shadow-md transition-colors hover:bg-accent;
   }
 
-  .payment-approved{
-    @apply rounded-md bg-green-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  .payment-approved {
+    @apply rounded-md bg-green-500 p-1 font-mono text-sm font-semibold uppercase text-white;
   }
 
-  .payment-pending{
-    @apply rounded-md bg-orange-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  .payment-pending {
+    @apply rounded-md bg-orange-500 p-1 font-mono text-sm font-semibold uppercase text-white;
   }
 
-  .payment-expired{
-    @apply rounded-md bg-red-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  .payment-expired {
+    @apply rounded-md bg-red-500 p-1 font-mono text-sm font-semibold uppercase text-white;
   }
 
-  .payment-free{
-    @apply rounded-md bg-gray-500 p-1 font-mono text-sm font-semibold uppercase text-white
+  .payment-free {
+    @apply rounded-md bg-gray-500 p-1 font-mono text-sm font-semibold uppercase text-white;
   }
 }
+  
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }

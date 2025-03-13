@@ -4,24 +4,15 @@ import calendarIcon from '@/assets/calendar-icon.png';
 import emojiIcon from '@/assets/emoji-icon.png';
 import graphIcon from '@/assets/graph-icon.png';
 import messageIcon from '@/assets/message-icon.png';
+import semad from '@/assets/semad.svg';
+import emat from '@/assets/e-mat.svg';
+
 
 export const navbar_links: { title: string; href: string }[] = [
   {
     title: 'Eventos',
     href: '/eventos',
-  },
-  {
-    title: 'Contrate',
-    href: '#',
-  },
-  {
-    title: 'Buscar evento',
-    href: '#',
-  },
-  {
-    title: 'Documentacao',
-    href: '#',
-  },
+  }
 ];
 
 // Usado na home page, para listar eventos que já passaram pelo Eventflow
@@ -30,13 +21,13 @@ export const events = [{
   imgAlt: 'logo do evento sercomp',
   description: null
 }, {
-  imgUrl: emojiIcon,
+  imgUrl: semad,
   imgAlt: 'Emoji muito estiloso, com óculos escuro',
-  description: 'Em andamento...'
+  description: null
 }, {
-  imgUrl: emojiIcon,
+  imgUrl: emat,
   imgAlt: 'Emoji muito estiloso, com óculos escuro',
-  description: 'Em andamento...'
+  description: null
 }, {
   imgUrl: emojiIcon,
   imgAlt: 'Emoji muito estiloso, com óculos escuro',

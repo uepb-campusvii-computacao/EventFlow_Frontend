@@ -138,7 +138,7 @@ export function Home() {
                     key={index}
                     className="flex max-w-56 h-40 flex-1 flex-col justify-center items-center rounded-[10px] border bg-background p-4 shadow-md"
                   >
-                    <img src={event.imgUrl} alt={event.imgAlt} />
+                    <img src={event.imgUrl} alt={event.imgAlt}  className='max-h-[150px] max-w-[216px]'/>
                     {event.description && <p className='drop-shadow-sm text-xl'>{event.description}</p>}
                   </div>
                 ))}
