@@ -1,3 +1,4 @@
+import { api } from '@/lib/api';
 import {
   CardPayment,
   initMercadoPago,
@@ -7,24 +8,45 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
+import { useMutation } from '@tanstack/react-query';
+import { useCookies } from 'react-cookie';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
-
-export function BrickCardMp({ amount }: { amount: number }) {
+async function  registerPayment(loteId: string, paymentData: ICardPaymentFormData<ICardPaymentBrickPayer>) {
+  const response = await api.post(`/lote/${loteId}/register`,
+    paymentData
+  )
+  return response.data;
+}
+  
+export function BrickCardMp({
+  amount,
+  loteId,
+}: {
+  amount: number;
+  loteId: string;
+}) {
+  const [cookies] = useCookies(['token']);
   const customization = {
     paymentMethods: {
       minInstallments: 1,
       maxInstallments: 5,
     },
-    visual: {
-      style: {
-        customVariables: {
-          baseColor: 'red',
-        },
-      },
-    },
   };
+  const queryClient = useQueryClient();
+  // const {mutate} = useMutation({
+  //   mutationFn: (payload: any)=> registerPayment(loteId, payload)
+  //   ,
+  //   mutationKey: ['register-payment'],
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({queryKey:['user-registration']});
+  //   }
+  // });
 
+  const navigate = useNavigate();
+  const { slug } = useParams();
   //pegar o preço do lote - nao implementado
   const initialization = {
     amount: amount || 0,
@@ -32,7 +54,24 @@ export function BrickCardMp({ amount }: { amount: number }) {
 
   const onSubmit = async (
     formData: ICardPaymentFormData<ICardPaymentBrickPayer>
-  ) => {};
+  ) => {
+    const payload = {
+      paymentMethod: 'CARD',
+      paymentData: formData,
+    };
+    try{
+      //mutate(payload.paymentData);
+      navigate(`/pagamentos/${slug}`)
+    } 
+    catch (error) {
+      console.error('Erro ao registrar inscrição:', error);
+      throw error;
+    }
+    finally {
+    
+    }
+
+  };
   const onError = async (error: any) => {
     console.log(error);
   };
@@ -43,6 +82,7 @@ export function BrickCardMp({ amount }: { amount: number }) {
       onSubmit={onSubmit}
       customization={customization}
       onError={onError}
+
     />
   );
 }

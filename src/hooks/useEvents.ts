@@ -1,7 +1,6 @@
 import { api } from '@/lib/api';
 import { Event } from '@/types';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCookies } from 'react-cookie';
 
 async function fetchEventsData(): Promise<Event[]> {
   try {
@@ -13,13 +12,9 @@ async function fetchEventsData(): Promise<Event[]> {
   }
 }
 
-async function fetchEventsByUser(token: string): Promise<Event[]> {
+async function fetchEventsByUser(): Promise<Event[]> {
   try {
-    const response = await api.get('/user/my-events', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get('/user/my-events');
     return response.data;
   } catch (error) {
     console.error('Error fetching events data:', error);
@@ -33,11 +28,9 @@ function getEventBySlug(
 ): Event | undefined {
   try {
     const events = queryClient.getQueryData<Event[]>(['events-data']);
-
     if (!events) {
       return undefined;
     }
-
     return events.find((event) => event.slug === slug);
   } catch (error) {
     console.error('Error searching events:', error);
@@ -66,8 +59,6 @@ function searchEvent(
 }
 
 export function useEvents(query?: string) {
-  const [cookies] = useCookies(['token']);
-  const token = cookies.token;
   const queryClient = useQueryClient();
 
   const eventsQuery = useQuery({
@@ -76,9 +67,8 @@ export function useEvents(query?: string) {
   });
 
   const eventsQueryByUser = useQuery({
-    queryFn: () => token ? fetchEventsByUser(token) : Promise.reject(new Error('Token is not available')),
+    queryFn: () => fetchEventsByUser(),
     queryKey: ['user-events'],
-    enabled: !!token,
   });
 
   const isSearching = Boolean(query && query.trim());

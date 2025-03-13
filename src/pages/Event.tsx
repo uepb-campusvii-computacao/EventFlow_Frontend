@@ -6,54 +6,25 @@ import { Toggle } from '@/components/ui/toggle';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
-import { api, checkError } from '@/lib/api';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { api } from '@/lib/api';
 import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
-import { AxiosResponse } from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { useFieldArray, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { z } from 'zod';
-
-const guestSchema = z.object({
-  name: z.string().nonempty('Nome é Obrigatório!'),
-  cpf: z.string().nonempty('CPF é Obrigatório!'),
-  email: z.string().email('Email invalido').nonempty('Email é Obrigatório!'),
-  organization: z.string(),
-  nickname: z.string(),
-});
-
-const registerGuestSchema = z.object({
-  guests: z.array(guestSchema).max(2),
-});
-
-type RegisterGuestSchema = z.infer<typeof registerGuestSchema>;
 
 export function Event() {
+  
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
   const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
-  const { data, isFetching, refetch } = useUserRegistrationInEvent(
+  const { data, isFetching} = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<RegisterGuestSchema>({
-    resolver: zodResolver(registerGuestSchema),
-  });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'guests',
-  });
 
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
@@ -63,64 +34,21 @@ export function Event() {
   }
 
   const statusPagamento = PaymentStatus;
+
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState <string>('');
+  const [isSubmitting, setIsSubmitting] = useState <boolean>(false);
 
   const usersIds = useRef<string[]>([]);
-  const formRef = useRef<HTMLFormElement | null>(null);
-
+  
   const navigate = useNavigate();
-  const [cookies] = useCookies(['token']);
+
+  const [cookies] = useCookies(['token','tokenEvent']);
+  const tokenEvent = cookies.tokenEvent;
   const token = cookies.token;
 
-  const handleRegisterGuests = async (
-    data: RegisterGuestSchema,
-    e?: React.BaseSyntheticEvent
-  ) => {
-    e?.preventDefault();
 
-    if (!token) {
-      return navigate('/sign-in');
-    }
-    if (!selectedBatch) {
-      return toast.error('Selecione um lote!');
-    }
-    setIsSubmitting(true);
-
-    if (data.guests.length === 0 && paymentMethod == 'pix') {
-      handleSubscribeInEvent();
-    }
-
-    try {
-      const responseArray = await Promise.all(
-        data.guests.map((guest) => {
-          return api.post(`/user/registerGuest`, guest, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        })
-      );
-
-      const responseIds = responseArray.map((response: AxiosResponse) => {
-        return response.data.uuid_user;
-      });
-
-      usersIds.current = responseIds;
-
-      if (paymentMethod == 'pix') {
-        handleSubscribeInEvent();
-      }
-    } catch (error) {
-      checkError(
-        error,
-        (message) => toast.error(message),
-        () => toast.error('Erro ao se inscrever no evento!')
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleSubscribeInEvent = async (
     paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>
@@ -134,34 +62,28 @@ export function Event() {
     setIsSubmitting(true);
 
     let payload: {
-      usersIds?: string[];
       paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>;
       atividades?: string[];
     } = paymentData ? { paymentData: paymentData } : {};
-
     try {
-      if (usersIds.current.length !== 0) {
-        payload.usersIds = usersIds.current;
-
-        await api.post(`/lote/${selectedBatch}/register-multiple`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } else {
-        await api.post(`/lote/${selectedBatch}/register`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
+      await api.post(`/lote/${selectedBatch}/register`, payload.paymentData ? 'pix' : payload);
+      toast.success('Inscrição realizada com sucesso!');
+      navigate(`/pagamentos/${slug}`);
     } catch (error) {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
-      refetch();
       setIsSubmitting(false);
-      navigate(`/pagamentos/${slug}`);
+      
     }
   };
 
   useEffect(() => {
-    refetch();
+    if(!token){
+      return navigate('/sign-in')
+    }
+    if(findEvent?.isPrivate && !tokenEvent){
+      return navigate('/')
+    }
   }, []);
 
   function BatchButtons() {
@@ -190,96 +112,7 @@ export function Event() {
       </>
     );
   }
-
-  function MultipleUsers() {
-    return (
-      <form
-        onSubmit={handleSubmit(handleRegisterGuests)}
-        className="flex flex-col gap-4"
-        ref={formRef}
-      >
-        <button
-          type="button"
-          onClick={() => {
-            if (fields.length < 2) {
-              append({
-                name: '',
-                cpf: '',
-                email: '',
-                organization: '',
-                nickname: '',
-              });
-            }
-          }}
-        >
-          Adicionar Convidado
-        </button>
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex flex-col gap-1">
-            <h1>Convidado {index + 1}</h1>
-            {errors.guests?.[index]?.name && (
-              <div className="text-sm text-red-500">
-                {errors.guests[index].name?.message}
-              </div>
-            )}
-            <input
-              className="focus:ring-red-500"
-              placeholder="Nome completo"
-              type="text"
-              {...register(`guests.${index}.name` as const)}
-            />
-            {errors.guests?.[index]?.cpf && (
-              <div className="text-sm text-red-500">
-                {errors.guests[index].cpf?.message}
-              </div>
-            )}
-            <input
-              className="focus:ring-red-500"
-              placeholder="CPF"
-              type="text"
-              {...register(`guests.${index}.cpf` as const)}
-            />
-            {errors.guests?.[index]?.email && (
-              <div className="text-sm text-red-500">
-                {errors.guests[index].email?.message}
-              </div>
-            )}
-            <input
-              className="focus:ring-red-500"
-              placeholder="E-mail"
-              type="email"
-              {...register(`guests.${index}.email` as const)}
-            />
-            {errors.guests?.[index]?.nickname && (
-              <div className="text-sm text-red-500">
-                {errors.guests[index].nickname?.message}
-              </div>
-            )}
-            <input
-              className="focus:ring-red-500"
-              placeholder="Nome do crachá"
-              type="text"
-              {...register(`guests.${index}.nickname` as const)}
-            />
-            {errors.guests?.[index]?.organization && (
-              <div className="text-sm text-red-500">
-                {errors.guests[index].organization?.message}
-              </div>
-            )}
-            <input
-              className="focus:ring-red-500"
-              placeholder="Instituição"
-              type="text"
-              {...register(`guests.${index}.organization` as const)}
-            />
-            <button type="button" onClick={() => remove(index)}>
-              Remover
-            </button>
-          </div>
-        ))}
-      </form>
-    );
-  }
+  
 
   function InscriptionSection() {
     return (
@@ -287,8 +120,6 @@ export function Event() {
         <div className="flex gap-2 flex-wrap w-full">
           <BatchButtons />
         </div>
-
-        <MultipleUsers />
 
         {selectedBatchValue > 0 ? (
           <div className="grid grid-cols-2 gap-5 ">
@@ -315,27 +146,22 @@ export function Event() {
           </div>
         ) : null}
 
-        {paymentMethod != '' ? (
-          paymentMethod === 'pix' ? (
+        {paymentMethod === 'pix' ? (
             <button
               disabled={isSubmitting}
-              onClick={() => {
-                formRef.current?.dispatchEvent(
-                  new window.Event('submit', {
-                    cancelable: true,
-                    bubbles: true,
-                  })
-                );
-              }}
+              onClick={() => { handleSubscribeInEvent()
+              }
+            }
               className="rounded-md px-3 py-2 font-semibold text-white text-center bg-red-500 text-lg hover:bg-red-700 disabled:bg-red-900"
             >
               Inscrever-se
             </button>
-          ) : (
-            // falta implementar a multi venda com cartao
-            <BrickCardMp amount={selectedBatchValue * (fields.length + 1)} />
-          )
-        ) : null}
+          ) : null
+        }
+        {paymentMethod === 'card' ? (
+            (<BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />)
+          ) : null
+        }
       </div>
     );
   }
@@ -349,7 +175,7 @@ export function Event() {
             ? `url(${findEvent?.background_img_url})`
             : '#ffffff',
         }}
-        className="pt-8"
+        className="pt-8 shadow-xl "
       >
         <Container className="rounded-xl bg-white">
           <main className="flex min-h-dvh w-full flex-col items-center gap-4 pb-16 pt-8">
@@ -362,7 +188,7 @@ export function Event() {
               />
 
               {findEvent?.conteudo && (
-                <div className="bg-white p-8 w-full">
+                <div className="bg-white p-12 w-full text-justify">
                   <div
                     className="w-full prose-sm"
                     dangerouslySetInnerHTML={{ __html: findEvent?.conteudo }}
@@ -381,17 +207,17 @@ export function Event() {
                         <span className="text-red-500">ENCERRADAS</span>!
                       </h1>
                     </div>
-                  ) : token ? (
+                  ) : token != '' ? (
                     <>
-                      {!data.isSubscribed ? (
+                      {!data?.isSubscribed ? (
                         <InscriptionSection />
                       ) : (
-                        <div>
+                        <div className='flex w-full items-center justify-center'>
                           <Button
                             className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
                             data-status={data.status_pagamento}
                           >
-                            <Link to={`/pagamentos/${slug}`}>
+                            <Link to={`/pagamentos/${slug}`} className=''>
                               {
                                 statusPagamento[
                                   data.status_pagamento as keyof typeof PaymentStatus
@@ -403,7 +229,7 @@ export function Event() {
                       )}
                     </>
                   ) : (
-                    <Link to="/sign-in">Faça o login</Link>
+                    <Link to="/sign-in" className='justify-center'>Faça o login</Link>
                   )}
                 </>
               )}

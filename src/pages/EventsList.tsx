@@ -50,9 +50,11 @@ export function EventsList() {
                   .map((item) => (
                     <EventCard
                       key={item.uuid_evento}
+                      idEvent={item.uuid_evento}
                       slug={String(item.slug)}
                       name={item.nome}
                       image_url={item.banner_img_url || ''}
+                      isPrivate={item?.isPrivate || false}  
                     />
                   ))}
           </div>
