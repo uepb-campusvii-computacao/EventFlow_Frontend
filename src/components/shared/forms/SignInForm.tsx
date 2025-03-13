@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Cookies from 'js-cookie';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -31,8 +30,7 @@ export default function SignInForm() {
   const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
   
   const navigate = useNavigate();
-  const [, setCookie] = useCookies(['token']);
-
+  
   async function handleSignIn(data: SignInFormSchema) {
     try {
       const response = await api.post('/login', data);

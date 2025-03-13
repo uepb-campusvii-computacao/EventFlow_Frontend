@@ -1,4 +1,4 @@
-import { fetchUserData, useAuth } from '@/hooks/useAuth';
+import { fetchUserData } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCookies } from 'react-cookie';
 import { Link, useNavigate } from 'react-router-dom';
