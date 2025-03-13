@@ -163,20 +163,11 @@ export function Event() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleSubscribeInEvent()}>Confirmar</AlertDialogAction>
+                  <AlertDialogAction disabled={isSubmitting} onClick={() => handleSubscribeInEvent()}>Confirmar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           </div>
-            // <button
-            //   disabled={isSubmitting}
-            //   onClick={() => { handleSubscribeInEvent()
-            //   }
-            // }
-            //   className="rounded-md px-3 py-2 font-semibold text-white text-center bg-red-500 text-lg hover:bg-red-700 disabled:bg-red-900"
-            // >
-            //   Inscrever-se
-            // </button>
           ) : null
         }
         {paymentMethod === 'card' ? (
