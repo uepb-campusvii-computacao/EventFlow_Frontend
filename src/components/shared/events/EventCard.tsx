@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
-import { useCookies } from "react-cookie";
+import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { Eye, EyeOff } from 'lucide-react';
 
@@ -33,12 +33,11 @@ export function EventCard({
   idEvent
   }: EventCardProps) {
 
-  const [cookies, setCookie] = useCookies(['token', 'tokenEvent']);
   const [isVisiblePassword, setIsVisiblePassword] = useState(false);
   const [password, setPassword] = useState<string>('');
 
 
-  const token = cookies.token;
+  const token = Cookies.get('token')
   const navigate = useNavigate();
   
   const handlerGetToken = async (password: string) => {
@@ -46,7 +45,7 @@ export function EventCard({
     const response = await api.post(`/events/${idEvent}/verify-password`, {password: password}, {
     })
     const { token : tokenEvent } = response.data;
-    setCookie('tokenEvent', tokenEvent, { path: '/' });
+    Cookies.set('tokenEvent', tokenEvent, { expires: 1 })
     toast.success('Senha correta!')
     navigate(`/eventos/${slug}`)
     }catch(error){
@@ -94,14 +93,14 @@ export function EventCard({
               </div>
             </DialogTrigger>
            
-            <DialogContent>
-              <DialogHeader>
+            <DialogContent className="flex flex-col gap-8">
+              <DialogHeader className="flex flex-col gap-4">
                 <DialogTitle>Este evento é privado!</DialogTitle>
                 <DialogDescription>
                   Digite a senha do evento:
                   <Input className={` border-stone-500 focus:!ring-purple-500`} type={isVisiblePassword ? 'text' : 'password'} onChange={(e) => setPassword(e.target.value)}/>
                   <button
-                    className="absolute right-8 top-[40%] text-gray-700"
+                    className="absolute right-8 top-[42%] text-gray-700"
                     type="button"
                     onClick={() => setIsVisiblePassword(!isVisiblePassword)}
                   >
@@ -114,7 +113,7 @@ export function EventCard({
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button type="submit" onClick={() =>
+                <Button  type="submit" onClick={() =>
                     {handlerGetToken(password)}
                 }> Enviar 
                 

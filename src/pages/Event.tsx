@@ -1,6 +1,7 @@
 import { BrickCardMp } from '@/components/shared/BrickMP';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
@@ -12,15 +13,15 @@ import {
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import Cookies  from 'js-cookie';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export function Event() {
-  
+
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
-  const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
+  const { data: batchs} = useEventBatchs(findEvent?.uuid_evento || '');
   const { data, isFetching} = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
@@ -40,14 +41,11 @@ export function Event() {
   const [paymentMethod, setPaymentMethod] = useState <string>('');
   const [isSubmitting, setIsSubmitting] = useState <boolean>(false);
 
-  
+
   const navigate = useNavigate();
 
-  const [cookies] = useCookies(['token','tokenEvent']);
-  const tokenEvent = cookies.tokenEvent;
-  const token = cookies.token;
-
-
+  const tokenEvent = Cookies.get('tokenEvent')
+  const token = Cookies.get('token')
 
   const handleSubscribeInEvent = async (
     paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>
@@ -72,7 +70,7 @@ export function Event() {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
       setIsSubmitting(false);
-      
+
     }
   };
 
@@ -88,7 +86,7 @@ export function Event() {
   function BatchButtons() {
     return (
       <>
-        {batchs?.map((item) => (
+        {batchs ? (batchs.map((item) => (
           <button
             key={item.uuid_lote}
             onClick={() => {
@@ -107,11 +105,16 @@ export function Event() {
               R$ {item.preco.toFixed(2).replace('.', ',')}
             </span>
           </button>
-        ))}
+        ))): <div>
+          <p>
+            Não há lotes disponíveis para inscrição neste evento.
+          </p>
+          </div>
+          }
       </>
     );
   }
-  
+
 
   function InscriptionSection() {
     return (
@@ -146,15 +149,25 @@ export function Event() {
         ) : null}
 
         {paymentMethod === 'pix' ? (
-            <button
-              disabled={isSubmitting}
-              onClick={() => { handleSubscribeInEvent()
-              }
-            }
-              className="rounded-md px-3 py-2 font-semibold text-white text-center bg-red-500 text-lg hover:bg-red-700 disabled:bg-red-900"
-            >
-              Inscrever-se
-            </button>
+            <div className="flex items-center justify-center p-6">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="default" className= "bg-red-500 hover:bg-red-800">Inscrever-se</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmação de inscrição?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Você está prestes a realizar uma transação via PIX, tem certeza que deseja continuar?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction disabled={isSubmitting} onClick={() => handleSubscribeInEvent()}>Confirmar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
           ) : null
         }
         {paymentMethod === 'card' ? (

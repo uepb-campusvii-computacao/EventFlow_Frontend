@@ -1,6 +1,6 @@
 import { fetchUserData } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCookies } from 'react-cookie';
+import  Cookies  from 'js-cookie';
 import { Link, useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Container } from './Container';
@@ -10,7 +10,7 @@ import { LogOutIcon } from 'lucide-react';
 
 export function Header() {
   const queryClient = useQueryClient();
-  const [, , removeCookie] = useCookies(['token']);
+  
   const navigate = useNavigate();
   const { data, isLoading} = useQuery({ 
     queryKey: ['user-data'],
@@ -18,7 +18,7 @@ export function Header() {
   });
 
   async function handleToggleLogOut() {
-    removeCookie('token');
+    Cookies.remove('token')
     await queryClient.invalidateQueries();
     window.localStorage.clear();
     navigate('/');

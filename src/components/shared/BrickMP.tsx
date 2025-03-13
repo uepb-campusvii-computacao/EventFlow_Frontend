@@ -11,13 +11,19 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
 async function  registerPayment(loteId: string, paymentData: any) {
+  try{
   const response = await api.post(`/lote/${loteId}/register`,
     {paymentData}
   )
   return response.data;
+  } catch (error) {
+    toast.error('Erro ao registrar inscrição');
+    window.location.reload();
+  }
 }
   
 export function BrickCardMp({
@@ -32,6 +38,9 @@ export function BrickCardMp({
       minInstallments: 1,
       maxInstallments: 5,
     },
+    payments:{
+      deferred_payment: true,
+    }
   };
   const queryClient = useQueryClient();
   const {mutate} = useMutation({

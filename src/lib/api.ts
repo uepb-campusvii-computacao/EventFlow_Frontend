@@ -22,6 +22,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(async function (response){
   return response;
 }, async function (error){
+  if(error.response?.status === 401){
+    Cookies.remove('token');
+    window.location.href = '/sign-in';
+  }
   return Promise.reject(error);
 });
 

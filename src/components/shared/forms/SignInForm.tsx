@@ -34,7 +34,7 @@ export default function SignInForm() {
   async function handleSignIn(data: SignInFormSchema) {
     try {
       const response = await api.post('/login', data);
-      Cookies.set('token', response.data.token);
+      Cookies.set('token', response.data.token, { expires: 7 });
       navigate('/');
     } catch (error) {
       checkError(
