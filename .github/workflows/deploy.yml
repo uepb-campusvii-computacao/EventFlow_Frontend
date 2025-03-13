@@ -24,16 +24,16 @@ jobs:
 
     - name: Run build task
       run: npm run build --if-present
-
+    
     - name: Test SSH Connection
       run: |
         # Configura o ambiente SSH
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-    
+        
         # Testa a conexão SSH
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'SSH Connection Successful'"
+        sshpass -p ${{ secrets.PSWD }} ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo 'SSH Connection Successful'"
     
 
 
