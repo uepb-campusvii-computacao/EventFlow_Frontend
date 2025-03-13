@@ -37,9 +37,6 @@ export function BrickCardMp({
     paymentMethods: {
       minInstallments: 1,
       maxInstallments: 5,
-    },
-    payments:{
-      deferred_payment: true,
     }
   };
   const queryClient = useQueryClient();
