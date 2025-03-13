@@ -11,7 +11,7 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -40,7 +40,6 @@ export function Event() {
   const [paymentMethod, setPaymentMethod] = useState <string>('');
   const [isSubmitting, setIsSubmitting] = useState <boolean>(false);
 
-  const usersIds = useRef<string[]>([]);
   
   const navigate = useNavigate();
 

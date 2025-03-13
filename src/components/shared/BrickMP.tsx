@@ -9,7 +9,6 @@ import {
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
 import { useMutation } from '@tanstack/react-query';
-import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -28,7 +27,6 @@ export function BrickCardMp({
   amount: number;
   loteId: string;
 }) {
-  const [cookies] = useCookies(['token']);
   const customization = {
     paymentMethods: {
       minInstallments: 1,
@@ -36,14 +34,14 @@ export function BrickCardMp({
     },
   };
   const queryClient = useQueryClient();
-  // const {mutate} = useMutation({
-  //   mutationFn: (payload: any)=> registerPayment(loteId, payload)
-  //   ,
-  //   mutationKey: ['register-payment'],
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({queryKey:['user-registration']});
-  //   }
-  // });
+  const {mutate} = useMutation({
+     mutationFn: (payload: any)=> registerPayment(loteId, payload)
+     ,
+     mutationKey: ['register-payment'],
+     onSuccess: () => {
+       queryClient.invalidateQueries({queryKey:['user-registration']});
+     }
+  });
 
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -60,7 +58,7 @@ export function BrickCardMp({
       paymentData: formData,
     };
     try{
-      //mutate(payload.paymentData);
+      mutate(payload.paymentData);
       navigate(`/pagamentos/${slug}`)
     } 
     catch (error) {
