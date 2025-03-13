@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Cookies from 'js-cookie';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
@@ -14,7 +15,7 @@ const signInFormSchema = z.object({
   senha: z.string().min(8, 'Este campo deve ter no mínimo 8 caracteres'),
 });
 
-type SignInFormSchema = z.infer<typeof signInFormSchema>;
+export type SignInFormSchema = z.infer<typeof signInFormSchema>;
 
 export default function SignInForm() {
   const {
@@ -35,7 +36,7 @@ export default function SignInForm() {
   async function handleSignIn(data: SignInFormSchema) {
     try {
       const response = await api.post('/login', data);
-      setCookie('token', response.data.token, { path: '/' });
+      Cookies.set('token', response.data.token);
       navigate('/');
     } catch (error) {
       checkError(
