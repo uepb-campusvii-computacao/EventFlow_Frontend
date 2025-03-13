@@ -1,7 +1,7 @@
-import ReactInputMask from 'react-input-mask';
-import {  Input, InputProps } from '../ui/input';
 import { forwardRef } from 'react';
- 
+import ReactInputMask from 'react-input-mask';
+import { Input, InputProps } from '../ui/input';
+
 interface MaskedInputProps extends InputProps {
   mask: string;
   alwaysShowMask?: boolean;
@@ -9,25 +9,23 @@ interface MaskedInputProps extends InputProps {
 }
 
 const MaskedInput = forwardRef<ReactInputMask, MaskedInputProps>(
-  ({ required,mask, alwaysShowMask, maskChar, ...props }, ref) => {
-  return (<ReactInputMask
-          {...props}
-          mask={mask}
-          alwaysShowMask={alwaysShowMask}
-          maskChar={maskChar}
-          onChange={props.onChange}
-          name={props.name}
-          value={props.value}
-          onBlur={props.onBlur}
-          ref={ref}
-        >
-          {(inputProps) => (
-            <Input
-              {...inputProps} disableUnderline
-            />
-          )}
-        </ReactInputMask>)
-
-          });
+  ({ required, mask, alwaysShowMask, maskChar, ...props }, ref) => {
+    return (
+      <ReactInputMask
+        {...props}
+        mask={mask}
+        alwaysShowMask={alwaysShowMask}
+        maskChar={maskChar}
+        onChange={props.onChange}
+        name={props.name}
+        value={props.value}
+        onBlur={props.onBlur}
+        ref={ref}
+      >
+        {(inputProps) => <Input {...inputProps} disableUnderline />}
+      </ReactInputMask>
+    );
+  }
+);
 
 export default MaskedInput;
