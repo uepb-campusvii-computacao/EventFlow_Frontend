@@ -66,7 +66,7 @@ export function Event() {
       atividades?: string[];
     } = paymentData ? { paymentData: paymentData } : {};
     try {
-      await api.post(`/lote/${selectedBatch}/register`, payload.paymentData ? 'pix' : payload);
+      await api.post(`/lote/${selectedBatch}/register`, payload);
       toast.success('Inscrição realizada com sucesso!');
       navigate(`/pagamentos/${slug}`);
     } catch (error) {
