@@ -16,7 +16,6 @@ function generateInitials(name: string) {
 export async function fetchUserData() {
   try {
     const response = await api.get('/user');
-
     return { ...response.data, initials: generateInitials(response.data.nome) };
   } catch (err) {
     console.log(err);
