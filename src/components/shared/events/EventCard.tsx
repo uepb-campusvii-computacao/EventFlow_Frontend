@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import { Cookie, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface EventCardProps {
   slug: string;
