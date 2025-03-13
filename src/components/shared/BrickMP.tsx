@@ -13,9 +13,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
-async function  registerPayment(loteId: string, paymentData: ICardPaymentFormData<ICardPaymentBrickPayer>) {
+async function  registerPayment(loteId: string, paymentData: any) {
   const response = await api.post(`/lote/${loteId}/register`,
-    paymentData
+    {paymentData}
   )
   return response.data;
 }
