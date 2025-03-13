@@ -8,10 +8,18 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
-import { useCookies } from 'react-cookie';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
-
+async function  registerPayment(loteId: string, paymentData: ICardPaymentFormData<ICardPaymentBrickPayer>) {
+  const response = await api.post(`/lote/${loteId}/register`,
+    paymentData
+  )
+  return response.data;
+}
+  
 export function BrickCardMp({
   amount,
   loteId,
@@ -19,14 +27,24 @@ export function BrickCardMp({
   amount: number;
   loteId: string;
 }) {
-  const [cookies] = useCookies(['token']);
   const customization = {
     paymentMethods: {
       minInstallments: 1,
       maxInstallments: 5,
     },
   };
+  const queryClient = useQueryClient();
+  const {mutate} = useMutation({
+     mutationFn: (payload: any)=> registerPayment(loteId, payload)
+     ,
+     mutationKey: ['register-payment'],
+     onSuccess: () => {
+       queryClient.invalidateQueries({queryKey:['user-registration']});
+     }
+  });
 
+  const navigate = useNavigate();
+  const { slug } = useParams();
   //pegar o preço do lote - nao implementado
   const initialization = {
     amount: amount || 0,
@@ -39,14 +57,18 @@ export function BrickCardMp({
       paymentMethod: 'CARD',
       paymentData: formData,
     };
+    try{
+      mutate(payload.paymentData);
+      navigate(`/pagamentos/${slug}`)
+    } 
+    catch (error) {
+      console.error('Erro ao registrar inscrição:', error);
+      throw error;
+    }
+    finally {
+    
+    }
 
-    const response = await api.post(`/lote/${loteId}/register`, payload, {
-      headers: {
-        Authorization: `Bearer ${cookies.token}`,
-      },
-    });
-
-    console.log(response.data);
   };
   const onError = async (error: any) => {
     console.log(error);
@@ -58,6 +80,7 @@ export function BrickCardMp({
       onSubmit={onSubmit}
       customization={customization}
       onError={onError}
+
     />
   );
 }

@@ -6,6 +6,10 @@ export type Event = {
   date: string;
   conteudo: string;
   banner_img_url?: string;
+  background_img_url?: string;
+  isPrivate?: boolean;
+  colors?: string;
+  active: boolean;
 };
 
 export type EventBatch = {

@@ -1,5 +1,5 @@
-import { useAuth } from '@/hooks/useAuth';
-import { useQueryClient } from '@tanstack/react-query';
+import { fetchUserData } from '@/hooks/useAuth';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCookies } from 'react-cookie';
 import { Link, useNavigate } from 'react-router-dom';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -7,11 +7,15 @@ import { Container } from './Container';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
 import { LogOutIcon } from 'lucide-react';
+
 export function Header() {
-  const { data, isFetching } = useAuth();
   const queryClient = useQueryClient();
   const [, , removeCookie] = useCookies(['token']);
   const navigate = useNavigate();
+  const { data, isLoading} = useQuery({ 
+    queryKey: ['user-data'],
+    queryFn: fetchUserData,
+  });
 
   async function handleToggleLogOut() {
     removeCookie('token');
@@ -22,7 +26,7 @@ export function Header() {
   }
 
   return (
-    <header className="w-full border-b-[4px] border-b-accent">
+    <header className="w-full border-b-[1px] border-b-purple-500">
       <Container className="flex items-center justify-between h-16">
         <Link to="/">
           <img
@@ -46,7 +50,7 @@ export function Header() {
         {data ? (
           <Popover>
             <PopoverTrigger className="font-mono border-4 rounded-full w-16 md:w-32 lg:w-40 h-12 flex items-center justify-center text-center">
-              {isFetching ? '...' : data.initials}
+              {isLoading ? '...' : data.initials}
             </PopoverTrigger>
             <PopoverContent className='w-full p-0 px-8'>
               <button className='flex  items-center flex-cols-2 justify-center gap-2 w-20 h-12' onClick={handleToggleLogOut}>

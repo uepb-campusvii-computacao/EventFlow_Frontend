@@ -51,18 +51,18 @@ export function SignUpForm() {
   });
 
   async function handleRegisterUser(data: SignUpFormSchema) {
-    console.log(data.cpf);
-    try {
-      await api.post('/register', data);
-      navigate('/sign-in');
-    } catch (error) {
-      checkError(
-        error,
-        (message) => toast.error(message),
-        () =>
-          toast.error(
-            'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
-          )
+
+  try {
+    await api.post('/register', data);
+    navigate('/sign-in');
+  } catch (error) {
+    checkError(
+      error,
+      (message) => toast.error(message),
+      () =>
+        toast.error(
+          'Erro ao buscar atividades: ' + error || 'Ocorreu um erro.'
+        )
       );
     }
   }
