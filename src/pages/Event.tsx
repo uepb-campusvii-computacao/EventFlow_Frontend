@@ -70,7 +70,6 @@ export function Event() {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
       setIsSubmitting(false);
-
     }
   };
 
@@ -79,6 +78,7 @@ export function Event() {
       return navigate('/sign-in')
     }
     if(findEvent?.isPrivate && !tokenEvent){
+      toast.error('Você não tem permissão para acessar este evento')
       return navigate('/')
     }
   }, []);
@@ -102,7 +102,10 @@ export function Event() {
             <h2 className="font-semibold text-lg">{item.nome}</h2>
             <span className="font-light">{item.descricao}</span>
             <span className="font-semibold">
-              R$ {item.preco.toFixed(2).replace('.', ',')}
+              R$ {item.preco.toFixed(2).replace('.', ',')} 
+            </span>
+            <span className='font-light text-sm italic'>
+              {paymentMethod !== '' ? paymentMethod === 'card' ? `+ R$ ${(Number(item.preco) * 0.0498).toFixed(2).replace('.', ',')}` : `+ R$ ${(Number(item.preco) * 0.0099).toFixed(2).replace('.', ',')}` : null}
             </span>
           </button>
         ))): <div>
@@ -171,7 +174,7 @@ export function Event() {
           ) : null
         }
         {paymentMethod === 'card' ? (
-            (<BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />)
+            (<BrickCardMp amount={selectedBatchValue + (selectedBatchValue * 0.0498)} loteId={selectedBatch} />)
           ) : null
         }
       </div>
