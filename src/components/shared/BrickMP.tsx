@@ -22,7 +22,6 @@ async function  registerPayment(loteId: string, paymentData: any) {
   return response.data;
   } catch (error) {
     toast.error('Erro ao registrar inscrição');
-    window.location.reload();
   }
 }
   
@@ -36,7 +35,7 @@ export function BrickCardMp({
   const customization = {
     paymentMethods: {
       minInstallments: 1,
-      maxInstallments: 5,
+      maxInstallments: 12,
     }
   };
   const queryClient = useQueryClient();

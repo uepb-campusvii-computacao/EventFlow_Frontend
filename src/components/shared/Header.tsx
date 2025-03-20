@@ -18,7 +18,8 @@ export function Header() {
   });
 
   async function handleToggleLogOut() {
-    Cookies.remove('token')
+    Cookies.remove('token', {path: '/'});
+    Cookies.remove('tokenEvent', {path: '/'});
     await queryClient.invalidateQueries();
     window.localStorage.clear();
     navigate('/');

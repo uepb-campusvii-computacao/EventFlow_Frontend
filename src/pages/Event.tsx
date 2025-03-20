@@ -32,6 +32,8 @@ export function Event() {
     REALIZADO = 'VER COMPROVANTE',
     CANCELADO = 'INSCRIÇÃO CANCELADA',
     EXPIRADO = 'PAGAMENTO EXPIRADO',
+    REJEITADO = 'PAGAMENTO REJEITADO',
+    PROCESSANDO = 'PROCESSANDO PAGAMENTO',
   }
 
   const statusPagamento = PaymentStatus;
@@ -70,7 +72,6 @@ export function Event() {
       toast.error('Erro ao se inscrever no evento!');
     } finally {
       setIsSubmitting(false);
-
     }
   };
 
@@ -79,6 +80,7 @@ export function Event() {
       return navigate('/sign-in')
     }
     if(findEvent?.isPrivate && !tokenEvent){
+      toast.error('Você não tem permissão para acessar este evento')
       return navigate('/')
     }
   }, []);
@@ -102,7 +104,10 @@ export function Event() {
             <h2 className="font-semibold text-lg">{item.nome}</h2>
             <span className="font-light">{item.descricao}</span>
             <span className="font-semibold">
-              R$ {item.preco.toFixed(2).replace('.', ',')}
+              R$ {item.preco.toFixed(2).replace('.', ',')} 
+            </span>
+            <span className='font-light text-sm italic'>
+              {paymentMethod !== '' ? paymentMethod === 'card' ? `+ R$ ${(Number(item.preco) * 0.0498).toFixed(2).replace('.', ',')}` : `+ R$ ${(Number(item.preco) * 0.0099).toFixed(2).replace('.', ',')}` : null}
             </span>
           </button>
         ))): <div>
@@ -171,7 +176,7 @@ export function Event() {
           ) : null
         }
         {paymentMethod === 'card' ? (
-            (<BrickCardMp amount={selectedBatchValue} loteId={selectedBatch} />)
+            (<BrickCardMp amount={selectedBatchValue + (selectedBatchValue * 0.0498)} loteId={selectedBatch} />)
           ) : null
         }
       </div>
@@ -226,7 +231,7 @@ export function Event() {
                       ) : (
                         <div className='flex w-full items-center justify-center'>
                           <Button
-                            className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
+                            className="data-[status=PENDENTE]:bg-yellow-500 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-600 data-[status=REJEITADO]:bg-red-600"
                             data-status={data.status_pagamento}
                           >
                             <Link to={`/pagamentos/${slug}`} className=''>
