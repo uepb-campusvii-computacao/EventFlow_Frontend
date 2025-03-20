@@ -32,6 +32,8 @@ export function Event() {
     REALIZADO = 'VER COMPROVANTE',
     CANCELADO = 'INSCRIÇÃO CANCELADA',
     EXPIRADO = 'PAGAMENTO EXPIRADO',
+    REJEITADO = 'PAGAMENTO REJEITADO',
+    PROCESSANDO = 'PROCESSANDO PAGAMENTO',
   }
 
   const statusPagamento = PaymentStatus;
@@ -229,7 +231,7 @@ export function Event() {
                       ) : (
                         <div className='flex w-full items-center justify-center'>
                           <Button
-                            className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300"
+                            className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300 data-[status=REJEITADO]:bg-red-300"
                             data-status={data.status_pagamento}
                           >
                             <Link to={`/pagamentos/${slug}`} className=''>
