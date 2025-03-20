@@ -45,7 +45,7 @@ export function EventCard({
     const response = await api.post(`/events/${idEvent}/verify-password`, {password: password}, {
     })
     const { token : tokenEvent } = response.data;
-    Cookies.set('tokenEvent', tokenEvent, { expires: 1 })
+    Cookies.set('tokenEvent', tokenEvent, { expires: 1/24, path: '/'});
     toast.success('Senha correta!')
     navigate(`/eventos/${slug}`)
     }catch(error){
