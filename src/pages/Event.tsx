@@ -231,7 +231,7 @@ export function Event() {
                       ) : (
                         <div className='flex w-full items-center justify-center'>
                           <Button
-                            className="data-[status=PENDENTE]:bg-yellow-300 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-300 data-[status=REJEITADO]:bg-red-300"
+                            className="data-[status=PENDENTE]:bg-yellow-500 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-600 data-[status=REJEITADO]:bg-red-600"
                             data-status={data.status_pagamento}
                           >
                             <Link to={`/pagamentos/${slug}`} className=''>
