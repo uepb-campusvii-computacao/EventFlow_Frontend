@@ -6,6 +6,7 @@ import { Payment } from './pages/Payment';
 import { ResetPassword } from './pages/ResetPassword';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
+import UpdatePayment from './pages/UpdatePayment';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/eventos" element={<EventsList />} />
         <Route path="/eventos/:slug" element={<Event />} />
         <Route path="/pagamentos/:slug" element={<Payment />} />
+        <Route path="/pagamentos/:slug/atualizar" element={<UpdatePayment />} />
         {/* <Route path="/eventos/:slug/inscricao" element={<Subscribe />} /> */}
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

@@ -1,7 +1,17 @@
 import { BrickCardMp } from '@/components/shared/BrickMP';
 import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
@@ -12,20 +22,18 @@ import {
   ICardPaymentBrickPayer,
   ICardPaymentFormData,
 } from '@mercadopago/sdk-react/esm/bricks/cardPayment/type';
+import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
-import Cookies  from 'js-cookie';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export function Event() {
-
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
-  const { data: batchs} = useEventBatchs(findEvent?.uuid_evento || '');
-  const { data, isFetching} = useUserRegistrationInEvent(
+  const { data: batchs } = useEventBatchs(findEvent?.uuid_evento || '');
+  const { data, isFetching } = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
-
 
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
@@ -40,14 +48,13 @@ export function Event() {
 
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [selectedBatchValue, setSelectedBatchValue] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState <string>('');
-  const [isSubmitting, setIsSubmitting] = useState <boolean>(false);
-
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const tokenEvent = Cookies.get('tokenEvent')
-  const token = Cookies.get('token')
+  const tokenEvent = Cookies.get('tokenEvent');
+  const token = Cookies.get('token');
 
   const handleSubscribeInEvent = async (
     paymentData?: ICardPaymentFormData<ICardPaymentBrickPayer>
@@ -76,50 +83,54 @@ export function Event() {
   };
 
   useEffect(() => {
-    if(!token){
-      return navigate('/sign-in')
+    if (!token) {
+      return navigate('/sign-in');
     }
-    if(findEvent?.isPrivate && !tokenEvent){
-      toast.error('Você não tem permissão para acessar este evento')
-      return navigate('/')
+    if (findEvent?.isPrivate && !tokenEvent) {
+      toast.error('Você não tem permissão para acessar este evento');
+      return navigate('/');
     }
   }, []);
 
   function BatchButtons() {
     return (
       <>
-        {batchs ? (batchs.map((item) => (
-          <button
-            key={item.uuid_lote}
-            onClick={() => {
-              setSelectedBatch(item.uuid_lote || '');
-              setSelectedBatchValue(item.preco);
-            }}
-            className={`rounded-md shadow-md border sm:w-auto w-full bg-slate-100 p-4 flex flex-col gap-1 ${
-              selectedBatch === item.uuid_lote
-                ? 'border-red-500'
-                : 'border-accent'
-            }`}
-          >
-            <h2 className="font-semibold text-lg">{item.nome}</h2>
-            <span className="font-light">{item.descricao}</span>
-            <span className="font-semibold">
-              R$ {item.preco.toFixed(2).replace('.', ',')} 
-            </span>
-            <span className='font-light text-sm italic'>
-              {paymentMethod !== '' ? paymentMethod === 'card' ? `+ R$ ${(Number(item.preco) * 0.0498).toFixed(2).replace('.', ',')}` : `+ R$ ${(Number(item.preco) * 0.0099).toFixed(2).replace('.', ',')}` : null}
-            </span>
-          </button>
-        ))): <div>
-          <p>
-            Não há lotes disponíveis para inscrição neste evento.
-          </p>
+        {batchs ? (
+          batchs.map((item) => (
+            <button
+              key={item.uuid_lote}
+              onClick={() => {
+                setSelectedBatch(item.uuid_lote || '');
+                setSelectedBatchValue(item.preco);
+              }}
+              className={`rounded-md shadow-md border sm:w-auto w-full bg-slate-100 p-4 flex flex-col gap-1 ${
+                selectedBatch === item.uuid_lote
+                  ? 'border-red-500'
+                  : 'border-accent'
+              }`}
+            >
+              <h2 className="font-semibold text-lg">{item.nome}</h2>
+              <span className="font-light">{item.descricao}</span>
+              <span className="font-semibold">
+                R$ {item.preco.toFixed(2).replace('.', ',')}
+              </span>
+              <span className="font-light text-sm italic">
+                {paymentMethod !== ''
+                  ? paymentMethod === 'card'
+                    ? `+ R$ ${(Number(item.preco) * 0.0498).toFixed(2).replace('.', ',')}`
+                    : `+ R$ ${(Number(item.preco) * 0.0099).toFixed(2).replace('.', ',')}`
+                  : null}
+              </span>
+            </button>
+          ))
+        ) : (
+          <div>
+            <p>Não há lotes disponíveis para inscrição neste evento.</p>
           </div>
-          }
+        )}
       </>
     );
   }
-
 
   function InscriptionSection() {
     return (
@@ -154,31 +165,43 @@ export function Event() {
         ) : null}
 
         {paymentMethod === 'pix' ? (
-            <div className="flex items-center justify-center p-6">
+          <div className="flex items-center justify-center p-6">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="default" className= "bg-red-500 hover:bg-red-800">Inscrever-se</Button>
+                <Button
+                  variant="default"
+                  className="bg-red-500 hover:bg-red-800"
+                >
+                  Inscrever-se
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirmação de inscrição?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Você está prestes a realizar uma transação via PIX, tem certeza que deseja continuar?
+                    Você está prestes a realizar uma transação via PIX, tem
+                    certeza que deseja continuar?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction disabled={isSubmitting} onClick={() => handleSubscribeInEvent()}>Confirmar</AlertDialogAction>
+                  <AlertDialogAction
+                    disabled={isSubmitting}
+                    onClick={() => handleSubscribeInEvent()}
+                  >
+                    Confirmar
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          ) : null
-        }
+        ) : null}
         {paymentMethod === 'card' ? (
-            (<BrickCardMp amount={selectedBatchValue + (selectedBatchValue * 0.0498)} loteId={selectedBatch} />)
-          ) : null
-        }
+          <BrickCardMp
+            amount={selectedBatchValue + selectedBatchValue * 0.0498}
+            loteId={selectedBatch}
+          />
+        ) : null}
       </div>
     );
   }
@@ -225,16 +248,16 @@ export function Event() {
                       </h1>
                     </div>
                   ) : token != '' ? (
-                    <>
+                    <div className="flex flex-row gap-2">
                       {!data?.isSubscribed ? (
                         <InscriptionSection />
                       ) : (
-                        <div className='flex w-full items-center justify-center'>
+                        <div className="flex w-full items-center justify-center">
                           <Button
                             className="data-[status=PENDENTE]:bg-yellow-500 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-600 data-[status=REJEITADO]:bg-red-600"
                             data-status={data.status_pagamento}
                           >
-                            <Link to={`/pagamentos/${slug}`} className=''>
+                            <Link to={`/pagamentos/${slug}`} className="">
                               {
                                 statusPagamento[
                                   data.status_pagamento as keyof typeof PaymentStatus
@@ -244,9 +267,24 @@ export function Event() {
                           </Button>
                         </div>
                       )}
-                    </>
+                      {data.status_pagamento != 'REALIZADO' &&
+                      data.status_pagamento != 'GRATUITO' ? (
+                        <div className="flex w-full items-center justify-center">
+                          <Button>
+                            <Link
+                              to={`/pagamentos/${slug}/atualizar`}
+                              className=""
+                            >
+                              Alterar Pagamento
+                            </Link>
+                          </Button>
+                        </div>
+                      ) : null}
+                    </div>
                   ) : (
-                    <Link to="/sign-in" className='justify-center'>Faça o login</Link>
+                    <Link to="/sign-in" className="justify-center">
+                      Faça o login
+                    </Link>
                   )}
                 </>
               )}
