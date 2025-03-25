@@ -42,6 +42,7 @@ export function Event() {
     EXPIRADO = 'PAGAMENTO EXPIRADO',
     REJEITADO = 'PAGAMENTO REJEITADO',
     PROCESSANDO = 'PROCESSANDO PAGAMENTO',
+    GRATUITO = "INSCRIÇÃO GRATUITA",
   }
 
   const statusPagamento = PaymentStatus;
@@ -257,7 +258,7 @@ export function Event() {
                             className="data-[status=PENDENTE]:bg-yellow-500 data-[status=REALIZADO]:bg-green-600 data-[status=CANCELADO]:bg-red-600 data-[status=REJEITADO]:bg-red-600"
                             data-status={data.status_pagamento}
                           >
-                            <Link to={`/pagamentos/${slug}`} className="">
+                            <Link to={data.status_pagamento != "GRATUITO" ? `/pagamentos/${slug}`:''} className="">
                               {
                                 statusPagamento[
                                   data.status_pagamento as keyof typeof PaymentStatus
@@ -268,7 +269,7 @@ export function Event() {
                         </div>
                       )}
                       {data.status_pagamento != 'REALIZADO' &&
-                      data.status_pagamento != 'GRATUITO' ? (
+                      data.status_pagamento != 'GRATUITO' && data.status_pagamento ? (
                         <div className="flex w-full items-center justify-center">
                           <Button>
                             <Link

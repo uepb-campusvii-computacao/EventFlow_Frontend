@@ -12,7 +12,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 
-initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY);
+initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY, {
+  locale: 'pt-BR',
+  advancedFraudPrevention: true,
+});
 async function registerPayment(loteId: string, paymentData: any) {
   try {
     const response = await api.post(`/lote/${loteId}/register`, {
@@ -74,12 +77,15 @@ export function BrickCardMp({
   };
 
   return (
+    <>
     <CardPayment
       initialization={initialization}
       onSubmit={onSubmit}
       customization={customization}
       onError={onError}
     />
+    <input type="hidden" id="deviceId" />
+    </>
   );
 }
 
