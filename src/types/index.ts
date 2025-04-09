@@ -52,7 +52,7 @@ export type Activity = {
 };
 
 export type Activities = {
-  minicursos: Activity[];
-  oficinas: Activity[];
-  workshops: Activity[];
+  [tipo in 'MINICURSO' | 'OFICINA' | 'WORKSHOP' | 'PALESTRA']?: {
+    [turno: string]: Activity[];
+  };
 };
