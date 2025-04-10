@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Toggle } from '@/components/ui/toggle';
 import { useActivities } from '@/hooks/useActivity';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
@@ -34,6 +35,7 @@ export function Event() {
     findEvent?.uuid_evento
   );
 
+
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
     REALIZADO = 'VER COMPROVANTE',
@@ -43,6 +45,7 @@ export function Event() {
     PROCESSANDO = 'PROCESSANDO PAGAMENTO',
     GRATUITO = 'INSCRIÇÃO GRATUITA',
   }
+
   const activityTypes: {
     key: keyof Activities;
     label: string;
@@ -61,9 +64,9 @@ export function Event() {
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  console.log(activities);
+  console.log(selectedActivities);
   const navigate = useNavigate();
-  console.log('selectedActivities', selectedActivities);
+
   const tokenEvent = Cookies.get('tokenEvent');
   const token = Cookies.get('token');
 
@@ -77,8 +80,8 @@ export function Event() {
     setIsSubmitting(true);
 
     let payload: {
-      atividades?: string[];
-    } = selectedActivities ? { atividades: selectedActivities } : {};
+      atividades?: string[],
+    } = selectedActivities.length > 0  ? { atividades: selectedActivities} : {};
     try {
       await api.post(`/lote/${selectedBatch}/register`, payload);
       toast.success('Inscrição realizada com sucesso!');
@@ -88,40 +91,6 @@ export function Event() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleSelect = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    atividadesTurno: { uuid_atividade: string; turno: string }[]
-  ) => {
-    const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
-
-    const newSelected = [...selectedActivities];
-
-    selected.forEach((id) => {
-      const atividade = atividadesTurno.find((a) => a.uuid_atividade === id);
-      if (!atividade) return;
-
-      const sameTurno = atividadesTurno.filter(
-        (a) =>
-          a.turno === atividade.turno && newSelected.includes(a.uuid_atividade)
-      );
-
-      if (newSelected.includes(id)) {
-        const index = newSelected.indexOf(id);
-        if (index !== -1) newSelected.splice(index, 1);
-      } else if (sameTurno.length > 0) {
-        sameTurno.forEach((a) => {
-          const index = newSelected.indexOf(a.uuid_atividade);
-          if (index !== -1) newSelected.splice(index, 1);
-        });
-        newSelected.push(id);
-      } else {
-        newSelected.push(id);
-      }
-    });
-
-    setSelectedActivities(newSelected);
   };
 
   useEffect(() => {
@@ -172,6 +141,10 @@ export function Event() {
       </>
     );
   }
+  // const existBatchs = batchs.length > 0 ? true : false;
+  // batchs.lenght > 0 ? () : ()
+  //? = true
+  //: = false
 
   function InscriptionSection() {
     return (
@@ -179,66 +152,84 @@ export function Event() {
         <div className="flex gap-2 flex-wrap w-full">
           <BatchButtons />
         </div>
+
         {activities && (
-          <div className="flex w-full flex-col items-center justify-center gap-6 p-4">
+          <div className="flex w-full flex-col items-center justify-center gap-8 p-4">
             <h1 className="text-center text-3xl font-bold">Atividades</h1>
             {activityTypes.map(({ key, label, color }) => {
-              const atividadePorTurno = activities[key];
-              const atividades = atividadePorTurno
-                ? Object.values(atividadePorTurno).flat()
+              const activitiesPerType = activities[key];
+              const turnos = activitiesPerType
+                ? Object.entries(activitiesPerType)
                 : [];
 
-              if (atividades.length === 0) return null;
+              if (turnos.length === 0) return null;
 
-              const atividadesTurno = Object.entries(
-                atividadePorTurno ?? {}
-              ).flatMap(([turno, lista]) =>
-                lista.map((a) => ({
-                  ...a,
-                  turno,
-                }))
-              );
               return (
-                <div key={key} className="w-full max-w-xl">
-                  <label className="mb-1 block font-medium text-lg text-gray-700">
+                <div key={key} className="w-full max-w-3xl space-y-6">
+                  <h2 className={`text-2xl font-semibold text-${color}-600`}>
                     {label}
-                  </label>
-                  <select
-                    multiple
-                    className={`w-full h-full rounded border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-${color}-500`}
-                    onChange={(e) => handleSelect(e, atividadesTurno)}
-                    value={selectedActivities.filter((id) =>
-                      atividades.some((a) => a.uuid_atividade === id)
-                    )}
-                  >
-                    <option disabled className="text-gray-400 italic">
-                      Selecione até dois de turnos diferentes
-                    </option>
-                    {Object.entries(atividadePorTurno ?? {}).map(
-                      ([turno, lista]) => (
-                        <optgroup
-                          className="font-bold"
-                          key={turno}
-                          label={`Turno: ${turno}`}
+                  </h2>
+
+                  {turnos.map(([turno, lista]) => {
+                    const selectedId = selectedActivities.find((id) =>
+                      lista.some((a) => a.uuid_atividade === id)
+                    );
+                    const handleChange = (selected: string) => {
+                      if (selected === 'none') {
+                      const otherIdsSameTurno =
+                        turnos
+                        .find(([t]) => t === turno)?.[1]
+                        .map((a) => a.uuid_atividade) || [];
+                      
+                      const updated = selectedActivities.filter(
+                        (id) => !otherIdsSameTurno.includes(id)
+                      );
+                      setSelectedActivities(updated);
+                      return;
+                      }
+
+                      const updated = [...selectedActivities, selected];
+                      setSelectedActivities(updated);
+                    };
+
+                    return (
+                      <div
+                        key={turno}
+                        className="bg-blue-100 p-4 rounded-md border shadow-sm"
+                      >
+                        <label className="block mb-2 font-medium text-gray-700">
+                          Turno: {turno}
+                        </label>
+                        <Select
+                          defaultValue={selectedId || ''}
+                          onValueChange={handleChange}
                         >
-                          {lista.map((a) => (
-                            <option
-                              key={a.uuid_atividade}
-                              value={a.uuid_atividade}
-                            >
-                              {a.nome}
-                            </option>
-                          ))}
-                        </optgroup>
-                      )
-                    )}
-                  </select>
+                          <SelectTrigger
+                            className={`w-full rounded border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-${color}-500`}
+                          >
+                            <SelectValue placeholder="Selecione a atividade" />
+                          </SelectTrigger>
+                            <SelectContent>
+                            <SelectItem value="none" className="text-slate-900 hover:bg-slate-600">Nenhuma</SelectItem>
+                            {lista.map((a) => (
+                                <SelectItem
+                                className="text-slate-900 hover:bg-slate-200"
+                                key={a.uuid_atividade}
+                                value={a.uuid_atividade}
+                                >
+                                {a.nome}
+                                </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    );
+                  })}
                 </div>
               );
             })}
           </div>
         )}
-
         {selectedBatchValue > 0 ? (
           <div className="grid grid-cols-2 gap-5 ">
             <Toggle
