@@ -13,7 +13,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Toggle } from '@/components/ui/toggle';
 import { useActivities } from '@/hooks/useActivity';
 import { useEventBatchs } from '@/hooks/useEventBatchs';
@@ -34,7 +40,6 @@ export function Event() {
   const { data, isFetching } = useUserRegistrationInEvent(
     findEvent?.uuid_evento
   );
-
 
   enum PaymentStatus {
     PENDENTE = 'PAGAMENTO PENDENTE',
@@ -80,8 +85,8 @@ export function Event() {
     setIsSubmitting(true);
 
     let payload: {
-      atividades?: string[],
-    } = selectedActivities.length > 0  ? { atividades: selectedActivities} : {};
+      atividades?: string[];
+    } = selectedActivities.length > 0 ? { atividades: selectedActivities } : {};
     try {
       await api.post(`/lote/${selectedBatch}/register`, payload);
       toast.success('Inscrição realizada com sucesso!');
@@ -122,7 +127,7 @@ export function Event() {
               <h2 className="font-semibold text-lg">{item.nome}</h2>
               <span className="font-light">{item.descricao}</span>
               <span className="font-semibold">
-                R$ {item.preco.toFixed(2).replace('.', ',')}
+                {selectedBatchValue > 0 ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : 'Gratuito'}          
               </span>
               <span className="font-light text-sm italic">
                 {paymentMethod !== ''
@@ -176,16 +181,16 @@ export function Event() {
                     );
                     const handleChange = (selected: string) => {
                       if (selected === 'none') {
-                      const otherIdsSameTurno =
-                        turnos
-                        .find(([t]) => t === turno)?.[1]
-                        .map((a) => a.uuid_atividade) || [];
-                      
-                      const updated = selectedActivities.filter(
-                        (id) => !otherIdsSameTurno.includes(id)
-                      );
-                      setSelectedActivities(updated);
-                      return;
+                        const otherIdsSameTurno =
+                          turnos
+                            .find(([t]) => t === turno)?.[1]
+                            .map((a) => a.uuid_atividade) || [];
+
+                        const updated = selectedActivities.filter(
+                          (id) => !otherIdsSameTurno.includes(id)
+                        );
+                        setSelectedActivities(updated);
+                        return;
                       }
 
                       const updated = [...selectedActivities, selected];
@@ -209,16 +214,21 @@ export function Event() {
                           >
                             <SelectValue placeholder="Selecione a atividade" />
                           </SelectTrigger>
-                            <SelectContent>
-                            <SelectItem value="none" className="text-slate-900 hover:bg-slate-600">Nenhuma</SelectItem>
+                          <SelectContent>
+                            <SelectItem
+                              value="none"
+                              className="text-slate-900 hover:bg-slate-600"
+                            >
+                              Nenhuma
+                            </SelectItem>
                             {lista.map((a) => (
-                                <SelectItem
+                              <SelectItem
                                 className="text-slate-900 hover:bg-slate-200"
                                 key={a.uuid_atividade}
                                 value={a.uuid_atividade}
-                                >
+                              >
                                 {a.nome}
-                                </SelectItem>
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -253,8 +263,14 @@ export function Event() {
               Cartão
             </Toggle>
           </div>
-        ) : null}
-
+        ) : (
+          <Button
+            disabled={isSubmitting}
+            onClick={() => handleSubscribeInEvent()}
+          >
+            Inscrever-se
+          </Button>
+        )}
         {paymentMethod === 'pix' ? (
           <div className="flex items-center justify-center p-6">
             <AlertDialog>
