@@ -16,13 +16,15 @@ initMercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY, {
   locale: 'pt-BR',
   advancedFraudPrevention: true,
 });
-async function registerPayment(loteId: string, paymentData: any) {
+async function registerPayment(loteId: string, paymentData: any, selectedActivities: string[]) {
   try {
     const response = await api.post(`/lote/${loteId}/register`, {
       paymentData,
+      atividades: selectedActivities
     });
     return response.data;
   } catch (error) {
+    console.log(error)
     toast.error('Erro ao registrar inscrição');
   }
 }
@@ -30,9 +32,11 @@ async function registerPayment(loteId: string, paymentData: any) {
 export function BrickCardMp({
   amount,
   loteId,
+  selectedActivities,
 }: {
   amount: number;
   loteId: string;
+  selectedActivities: string[];
 }) {
   const customization = {
     paymentMethods: {
@@ -42,7 +46,7 @@ export function BrickCardMp({
   };
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    mutationFn: (payload: any) => registerPayment(loteId, payload),
+    mutationFn: (payload: any) => registerPayment(loteId, payload, selectedActivities),
     mutationKey: ['register-payment'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-registration'] });
@@ -51,7 +55,6 @@ export function BrickCardMp({
 
   const navigate = useNavigate();
   const { slug } = useParams();
-  //pegar o preço do lote - nao implementado
   const initialization = {
     amount: amount || 0,
   };
