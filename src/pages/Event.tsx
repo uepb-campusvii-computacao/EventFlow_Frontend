@@ -127,7 +127,7 @@ export function Event() {
               <h2 className="font-semibold text-lg">{item.nome}</h2>
               <span className="font-light">{item.descricao}</span>
               <span className="font-semibold">
-                R$ {item.preco.toFixed(2).replace('.', ',')}
+                {selectedBatchValue > 0 ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : 'Gratuito'}          
               </span>
               <span className="font-light text-sm italic">
                 {paymentMethod !== ''
