@@ -127,7 +127,7 @@ export function Event() {
               <h2 className="font-semibold text-lg">{item.nome}</h2>
               <span className="font-light">{item.descricao}</span>
               <span className="font-semibold">
-                {selectedBatchValue > 0 ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : 'Gratuito'}          
+                {item.preco > 0 ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : 'Gratuito'}          
               </span>
               <span className="font-light text-sm italic">
                 {paymentMethod !== ''
@@ -263,14 +263,14 @@ export function Event() {
               Cartão
             </Toggle>
           </div>
-        ) : (
+        ) : selectedBatch ? (
           <Button
             disabled={isSubmitting}
             onClick={() => handleSubscribeInEvent()}
           >
             Inscrever-se
           </Button>
-        )}
+        ) : null}
         {paymentMethod === 'pix' ? (
           <div className="flex items-center justify-center p-6">
             <AlertDialog>
