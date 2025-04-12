@@ -127,7 +127,9 @@ export function Event() {
               <h2 className="font-semibold text-lg">{item.nome}</h2>
               <span className="font-light">{item.descricao}</span>
               <span className="font-semibold">
-                {item.preco > 0 ? `R$ ${item.preco.toFixed(2).replace('.', ',')}` : 'Gratuito'}          
+                {item.preco > 0
+                  ? `R$ ${item.preco.toFixed(2).replace('.', ',')}`
+                  : 'Gratuito'}
               </span>
               <span className="font-light text-sm italic">
                 {paymentMethod !== ''
@@ -227,7 +229,7 @@ export function Event() {
                                 key={a.uuid_atividade}
                                 value={a.uuid_atividade}
                               >
-                                {a.nome}
+                                {`${a.nome} [${a._count}/${a.max_participants}]`}
                               </SelectItem>
                             ))}
                           </SelectContent>
