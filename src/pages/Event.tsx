@@ -223,15 +223,36 @@ export function Event() {
                             >
                               Nenhuma
                             </SelectItem>
-                            {lista.map((a) => (
-                              <SelectItem
-                                className="text-slate-900 hover:bg-slate-200"
-                                key={a.uuid_atividade}
-                                value={a.uuid_atividade}
-                              >
-                                {`${a.nome} [${a._count}/${a.max_participants}]`}
-                              </SelectItem>
-                            ))}
+                            {lista.map((a) =>
+                              a.max_participants ? (
+                                a._count < a.max_participants ? (
+                                  <SelectItem
+                                    className="text-slate-900 hover:bg-slate-200"
+                                    key={a.uuid_atividade}
+                                    value={a.uuid_atividade}
+                                  >
+                                    {`${a.nome} [${a._count}/${a.max_participants}]`}
+                                  </SelectItem>
+                                ) : (
+                                  <SelectItem
+                                    disabled
+                                    className="text-slate-900 hover:bg-slate-200"
+                                    key={a.uuid_atividade}
+                                    value={"nula"}
+                                  >
+                                    {`${a.nome} [LOTADA]`}
+                                  </SelectItem>
+                                )
+                              ) : (
+                                <SelectItem
+                                  className="text-slate-900 hover:bg-slate-200"
+                                  key={a.uuid_atividade}
+                                  value={a.uuid_atividade}
+                                >
+                                  {`${a.nome} [${a._count}/${a.max_participants}]`}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
