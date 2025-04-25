@@ -7,11 +7,13 @@ import { ResetPassword } from './pages/ResetPassword';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 import UpdatePayment from './pages/UpdatePayment';
+import { AuthProvider } from './context/contextAuth';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+    <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
@@ -22,6 +24,7 @@ export default function App() {
         {/* <Route path="/eventos/:slug/inscricao" element={<Subscribe />} /> */}
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
+    </AuthProvider>
     </BrowserRouter>
   );
 }
