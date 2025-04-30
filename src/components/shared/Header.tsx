@@ -7,6 +7,8 @@ import { Container } from './Container';
 import { MobileNavBar } from './MobileNavBar';
 import { NavBar } from './NavBar';
 import { LogOutIcon } from 'lucide-react';
+import { useAuth } from '@/context/contextAuth';
+
 
 export function Header() {
   const queryClient = useQueryClient();
@@ -17,8 +19,10 @@ export function Header() {
     queryFn: fetchUserData,
   });
 
+  const ContextAuth = useAuth();
+
   async function handleToggleLogOut() {
-    Cookies.remove('token', {path: '/'});
+    ContextAuth.logout();
     Cookies.remove('tokenEvent', {path: '/'});
     await queryClient.invalidateQueries();
     window.localStorage.clear();

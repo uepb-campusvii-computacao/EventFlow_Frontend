@@ -1,7 +1,8 @@
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/contextAuth';
 import { api, checkError } from '@/lib/api';
 import { zodResolver } from '@hookform/resolvers/zod';
-import Cookies from 'js-cookie';
+
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -30,11 +31,14 @@ export default function SignInForm() {
   const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
   
   const navigate = useNavigate();
+
+const ContextAuth = useAuth();
+
   
   async function handleSignIn(data: SignInFormSchema) {
     try {
       const response = await api.post('/login', data);
-      Cookies.set('token', response.data.token, { expires: 12/24, path: '/'});
+      ContextAuth.login(response.data.token);
       navigate('/');
     } catch (error) {
       checkError(
