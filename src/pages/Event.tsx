@@ -69,7 +69,6 @@ export function Event() {
   const [paymentMethod, setPaymentMethod] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-  console.log(selectedActivities);
   const navigate = useNavigate();
 
   const tokenEvent = Cookies.get('tokenEvent');
