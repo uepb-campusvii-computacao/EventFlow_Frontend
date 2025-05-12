@@ -3,6 +3,9 @@ import { Event } from './pages/Event';
 import { EventsList } from './pages/EventsList';
 import { Home } from './pages/Home';
 import { Payment } from './pages/Payment';
+import { Profile } from './pages/Profile';
+import { ProfileActivities } from './pages/ProfileActivities';
+import { ProfileEvents } from './pages/ProfileEvents';
 import { ResetPassword } from './pages/ResetPassword';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
@@ -21,6 +24,9 @@ export default function App() {
         <Route path="/pagamentos/:slug/atualizar" element={<UpdatePayment />} />
         {/* <Route path="/eventos/:slug/inscricao" element={<Subscribe />} /> */}
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/perfil" element={<Profile />} />
+        <Route path="/perfil/eventos" element={<ProfileEvents />} />
+        <Route path="/perfil/atividades" element={<ProfileActivities />} />
       </Routes>
     </BrowserRouter>
   );
