@@ -40,7 +40,11 @@ export type UserSubscription = {
     qr_code: string;
     ticket_url: string;
   };
-  atividades: { nome: string; tipo_atividade: string; uuid_atividade: string }[];
+  atividades: {
+    nome: string;
+    tipo_atividade: string;
+    uuid_atividade: string;
+  }[];
 };
 
 export type Activity = {
@@ -52,7 +56,20 @@ export type Activity = {
 };
 
 export type Activities = {
-  [tipo in 'MINICURSO' | 'OFICINA' | 'WORKSHOP' | 'PALESTRA']?: {
+  [tipo in ActivityTypes]?: {
     [turno: string]: Activity[];
   };
 };
+
+export enum ActivityTypes {
+  MINICURSO = 'MINICURSO',
+  OFICINA = 'OFICINA',
+  WORKSHOP = 'WORKSHOP',
+  PALESTRA = 'PALESTRA',
+}
+
+export enum Shifts {
+  MATUTINO = 'MANHA',
+  VESPERTINO = 'TARDE',
+  NOTURNO = 'NOITE',
+}

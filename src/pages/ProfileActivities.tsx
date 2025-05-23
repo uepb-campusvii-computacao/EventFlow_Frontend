@@ -3,8 +3,17 @@ import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
 import { Main } from '@/components/shared/Main';
 import { SideBar } from '@/components/shared/SideBar/Root';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { api } from '@/lib/api';
 import { profileLinks } from '@/lib/links';
+import { ActivityTypes, Shifts } from '@/types';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 
@@ -24,6 +33,21 @@ export function ProfileActivities() {
       }[]
     | null
   >(null);
+  const [searchQueryName, setSearchQueryName] = useState<string | null>(null);
+  const [searchQueryType, setSearchQueryType] = useState<ActivityTypes | null>(
+    null
+  );
+  const [searchQueryPresence, setSearchQueryPresence] = useState<
+    boolean | null
+  >(null);
+  const [searchQueryDateEnd, setSearchQueryDateEnd] = useState<Date | null>(
+    null
+  );
+  const [searchQueryDateStart, setSearchQueryDateStart] = useState<Date | null>(
+    null
+  );
+  const [searchQueryEvent, setSearchQueryEvent] = useState<string | null>(null);
+  const [searchQueryShift, setSearchQueryShift] = useState<Shifts | null>(null);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -49,35 +73,192 @@ export function ProfileActivities() {
       <div className="flex w-full h-[calc(100vh-4rem-1px)]">
         <SideBar.Main items={profileLinks} />
         <Main className="w-full">
-          <Container className="flex flex-col gap-4">
-            {activities?.map((activity) => (
-              <Card.Wrapper>
-                <Card.Body>
-                  <Card.Title
-                    title={`${activity.nome} - ${activity.turno.toLocaleLowerCase()}`}
-                  />
-                  <div className="flex gap-2 items-start justify-between">
-                    <div className="flex flex-col gap-2">
-                      <Card.Description
-                        description={`Evento: ${activity.evento}`}
-                      />
-                      <Card.Description
-                        description={`Tipo: ${activity.tipo_atividade}`}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Card.Description
-                        description={`Data: ${activity.data ?? 'Sem data'}`}
-                      />
-                      <Card.Description
-                        description={`Presença: ${activity.presenca ? 'Confirmada' : 'Não confirmada'}`}
-                      />
-                    </div>
-                  </div>
-                  <Card.Description description={`${activity.descricao}`} />
-                </Card.Body>
-              </Card.Wrapper>
-            ))}
+          <Container className="flex flex-col gap-4 w-full h-full">
+            <div className="flex relative items-center">
+              <Input
+                type="text"
+                placeholder="Pesquise o nome da Atividade"
+                className="focus:!ring-purple-500"
+                onChange={(e) => setSearchQueryName(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Pesquise o nome do Evento"
+                className="focus:!ring-purple-500"
+                onChange={(e) => setSearchQueryEvent(e.target.value)}
+              />
+              <Input
+                type="date"
+                placeholder="Data Inicial"
+                className="focus:!ring-purple-500"
+                onChange={(e) =>
+                  setSearchQueryDateStart(new Date(e.target.value))
+                }
+              />
+              <Input
+                type="date"
+                placeholder="Data Final"
+                className="focus:!ring-purple-500"
+                onChange={(e) =>
+                  setSearchQueryDateEnd(new Date(e.target.value))
+                }
+              />
+              <Select
+                defaultValue="all"
+                onValueChange={(value) => {
+                  const isConfirmed: { [key: string]: boolean | null } = {
+                    all: null,
+                    yes: true,
+                    no: false,
+                  };
+
+                  setSearchQueryPresence(isConfirmed[value]);
+                }}
+              >
+                <SelectTrigger className="capitalize">
+                  <SelectValue placeholder="Selecione o tipo de presença" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="yes">Confirmada</SelectItem>
+                  <SelectItem value="no">Não Confirmada</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select
+                defaultValue="all"
+                onValueChange={(value) => {
+                  const activities: { [key: string]: ActivityTypes | null } = {
+                    all: null,
+                    ...Object.values(ActivityTypes).reduce(
+                      (obj, type) => {
+                        obj[type] = type;
+                        return obj;
+                      },
+                      {} as { [key: string]: ActivityTypes | null }
+                    ),
+                  };
+
+                  setSearchQueryType(activities[value]);
+                }}
+              >
+                <SelectTrigger className="capitalize">
+                  <SelectValue placeholder="Selecione o tipo de Atividade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {Object.values(ActivityTypes).map((type) => (
+                    <SelectItem key={type} value={type} className="capitalize">
+                      {type.toLocaleLowerCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                defaultValue="all"
+                onValueChange={(value) => {
+                  const shifts: { [key: string]: Shifts | null } = {
+                    all: null,
+                    ...Object.values(Shifts).reduce(
+                      (obj, shift) => {
+                        obj[shift] = shift;
+                        return obj;
+                      },
+                      {} as { [key: string]: Shifts | null }
+                    ),
+                  };
+
+                  setSearchQueryShift(shifts[value]);
+                }}
+              >
+                <SelectTrigger className="capitalize">
+                  <SelectValue placeholder="Selecione o turno" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  {Object.values(Shifts).map((shift) => (
+                    <SelectItem
+                      key={shift}
+                      value={shift}
+                      className="capitalize"
+                    >
+                      {shift.toLocaleLowerCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              {activities &&
+                activities
+                  .filter((activity) => {
+                    const activityDate = new Date(activity.data);
+
+                    const nameCondition =
+                      !searchQueryName ||
+                      activity.nome.includes(searchQueryName);
+                    const eventCondition =
+                      !searchQueryEvent ||
+                      activity.evento.includes(searchQueryEvent);
+                    const typeCondition =
+                      !searchQueryType ||
+                      activity.tipo_atividade === searchQueryType;
+                    const presenceCondition =
+                      searchQueryPresence === null ||
+                      activity.presenca === searchQueryPresence;
+
+                    const dateStartCondition = !(
+                      searchQueryDateStart &&
+                      activityDate < searchQueryDateStart
+                    );
+                    const dateEndCondition = !(
+                      searchQueryDateEnd && activityDate > searchQueryDateEnd
+                    );
+
+                    const shiftCondition =
+                      !searchQueryShift || activity.turno === searchQueryShift;
+
+                    return (
+                      nameCondition &&
+                      eventCondition &&
+                      typeCondition &&
+                      presenceCondition &&
+                      dateStartCondition &&
+                      dateEndCondition &&
+                      shiftCondition
+                    );
+                  })
+                  .map((activity) => (
+                    <Card.Wrapper>
+                      <Card.Body>
+                        <Card.Title
+                          title={`${activity.nome} - ${activity.turno.toLocaleLowerCase()}`}
+                        />
+                        <div className="flex gap-2 items-start justify-between">
+                          <div className="flex flex-col gap-2">
+                            <Card.Description
+                              description={`Evento: ${activity.evento}`}
+                            />
+                            <Card.Description
+                              description={`Tipo: ${activity.tipo_atividade}`}
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <Card.Description
+                              description={`Data: ${activity.data ?? 'Sem data'}`}
+                            />
+                            <Card.Description
+                              description={`Presença: ${activity.presenca ? 'Confirmada' : 'Não confirmada'}`}
+                            />
+                          </div>
+                        </div>
+                        <Card.Description
+                          description={`${activity.descricao}`}
+                        />
+                      </Card.Body>
+                    </Card.Wrapper>
+                  ))}
+            </div>
           </Container>
         </Main>
       </div>
