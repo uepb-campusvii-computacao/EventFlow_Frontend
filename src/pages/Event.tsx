@@ -26,7 +26,7 @@ import { useEventBatchs } from '@/hooks/useEventBatchs';
 import { useUserRegistrationInEvent } from '@/hooks/useEventInscription';
 import { useEvents } from '@/hooks/useEvents';
 import { api } from '@/lib/api';
-import { Activities } from '@/types';
+import { Activities, ActivityTypes } from '@/types';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -56,10 +56,10 @@ export function Event() {
     label: string;
     color: string;
   }[] = [
-    { key: 'MINICURSO', label: 'Minicursos', color: 'blue' },
-    { key: 'OFICINA', label: 'Oficinas', color: 'green' },
-    { key: 'WORKSHOP', label: 'Workshops', color: 'purple' },
-    { key: 'PALESTRA', label: 'Palestras', color: 'orange' },
+    { key: ActivityTypes.MINICURSO, label: 'Minicursos', color: 'blue' },
+    { key: ActivityTypes.OFICINA, label: 'Oficinas', color: 'green' },
+    { key: ActivityTypes.WORKSHOP, label: 'Workshops', color: 'purple' },
+    { key: ActivityTypes.PALESTRA, label: 'Palestras', color: 'orange' },
   ];
 
   const statusPagamento = PaymentStatus;

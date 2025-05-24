@@ -5,6 +5,7 @@ import { Home } from './pages/Home';
 import { Payment } from './pages/Payment';
 import { Profile } from './pages/Profile';
 import { ProfileActivities } from './pages/ProfileActivities';
+import { ProfileEventPage } from './pages/ProfileEventPage';
 import { ProfileEvents } from './pages/ProfileEvents';
 import { ResetPassword } from './pages/ResetPassword';
 import { SignIn } from './pages/SignIn';
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/perfil" element={<Profile />} />
         <Route path="/perfil/eventos" element={<ProfileEvents />} />
         <Route path="/perfil/atividades" element={<ProfileActivities />} />
+        <Route path="/perfil/eventos/:slug" element={<ProfileEventPage />} />
       </Routes>
     </BrowserRouter>
   );

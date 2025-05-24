@@ -153,7 +153,7 @@ export function ProfileEvents() {
                 .map((data) => {
                   return (
                     <Card.Wrapper key={data.id}>
-                      <Card.Link to={`/profile/events/${data.slug}`}>
+                      <Card.Link to={`/perfil/eventos/${data.slug}`}>
                         <Card.Image src={data.banner} alt={data.nome} />
                         <Card.Body className="flex flex-row justify-between items-start gap-4">
                           <div className="flex flex-col">
