@@ -15,7 +15,7 @@ export const SideBar = {
   }) => (
     <Wrapper>
       {items.map((item) => (
-        <Item {...item} />
+        <Item key={item.to} {...item} />
       ))}
     </Wrapper>
   ),
