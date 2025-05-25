@@ -12,9 +12,18 @@ async function fetchEventsData(): Promise<Event[]> {
   }
 }
 
-async function fetchEventsByUser(): Promise<Event[]> {
+async function fetchEventsByUser(): Promise<
+  {
+    id: string;
+    nome: string;
+    slug: string;
+    ativo: boolean;
+    banner: string | null;
+    data: Date | null;
+  }[]
+> {
   try {
-    const response = await api.get('/user/my-events');
+    const response = await api.get('/user/events');
     return response.data;
   } catch (error) {
     console.error('Error fetching events data:', error);

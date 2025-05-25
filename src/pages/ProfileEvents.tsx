@@ -11,25 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { api } from '@/lib/api';
+import { useEvents } from '@/hooks/useEvents';
 import { profileLinks } from '@/lib/links';
-import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export function ProfileEvents() {
-  const token = Cookies.get('token');
+  const { eventsQueryByUser } = useEvents();
 
-  const [events, setEvents] = useState<
-    | {
-        id: string;
-        slug: string;
-        nome: string;
-        data: string | null;
-        ativo: boolean;
-        banner: string;
-      }[]
-    | null
-  >(null);
   const [searchQueryName, setSearchQueryName] = useState('');
   const [searchQueryActive, setSearchQueryActive] = useState<boolean | null>(
     null
@@ -40,24 +28,6 @@ export function ProfileEvents() {
   const [searchQueryEndDate, setSearchQueryEndDate] = useState<Date | null>(
     null
   );
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await api.get('/user/events', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.data;
-        setEvents(data);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    };
-
-    fetchEvents();
-  }, []);
 
   return (
     <>
@@ -113,8 +83,8 @@ export function ProfileEvents() {
                 </SelectContent>
               </Select>
             </div>
-            {events &&
-              events
+            {eventsQueryByUser.data &&
+              eventsQueryByUser.data
                 .filter((event) => {
                   if (
                     !searchQueryName &&
