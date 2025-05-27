@@ -1,13 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Event } from './pages/Event';
-import { EventsList } from './pages/EventsList';
-import { Home } from './pages/Home';
-import { Payment } from './pages/Payment';
-import { ResetPassword } from './pages/ResetPassword';
-import { SignIn } from './pages/SignIn';
-import { SignUp } from './pages/SignUp';
-import UpdatePayment from './pages/UpdatePayment';
-import { AuthProvider } from './context/contextAuth';
+import { Event } from './events/pages/Event';
+import { EventsList } from './events/pages/EventsList';
+import { Home } from './Home';
+import { Payment } from './payments/pages/Payment';
+import { ResetPassword } from './auth/pages/ResetPassword';
+import { SignIn } from './auth/pages/SignIn';
+import { SignUp } from './signup/pages/SignUp';
+import UpdatePayment from './payments/pages/UpdatePayment';
+import { AuthProvider } from './auth/hooks/contextAuth';
 
 export default function App() {
   return (
