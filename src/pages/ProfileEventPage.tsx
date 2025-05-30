@@ -345,6 +345,13 @@ export function ProfileEventPage() {
                                         className="text-slate-900 hover:bg-slate-200"
                                         key={a.uuid_atividade}
                                         value={a.uuid_atividade}
+                                        disabled={
+                                          a.max_participants != null
+                                            ? a._count >= a.max_participants
+                                              ? true
+                                              : false
+                                            : false
+                                        }
                                       >
                                         {`${a.nome} [${a._count}/${a.max_participants}]`}
                                       </SelectItem>
