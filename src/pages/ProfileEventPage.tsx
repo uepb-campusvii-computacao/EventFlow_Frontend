@@ -18,6 +18,7 @@ import { profileLinks } from '@/lib/links';
 import { Activities, ActivityTypes } from '@/types';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 
 export function ProfileEventPage() {
@@ -25,28 +26,26 @@ export function ProfileEventPage() {
 
   const { slug } = useParams();
   const { findEvent } = useEvents(slug);
-  const { data: activities } = useActivities(findEvent?.uuid_evento || '');
-  const { data: userData, isFetching } = useUserRegistrationInEvent(
-    findEvent?.uuid_evento
-  );
+  const {
+    data: activities,
+    isFetching: isFetchingActivities,
+    refetch: refetchActivities,
+    isRefetching: isRefetchingActivities,
+  } = useActivities(findEvent?.uuid_evento || '');
+  const { data: userData, isFetching: isFetchingUserData } =
+    useUserRegistrationInEvent(findEvent?.uuid_evento);
 
   const [userActivities, setUserActivities] = useState<
     | {
-        date: string;
-        descricao: string;
-        evento: string;
         id: string;
-        nome: string;
-        presenca: boolean;
+        tipo: string;
+        turno: string;
       }[]
     | null
   >(null);
   const [selectedActivities, setSelectedActivities] = useState<
     { id: string; turno: string; tipo: string }[] | []
   >([]);
-
-  console.log('userActivities', userActivities);
-  console.log('selectedActivities', selectedActivities);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -60,7 +59,32 @@ export function ProfileEventPage() {
           },
         });
         const data = await response.data;
-        setUserActivities(data);
+        setUserActivities(
+          data.map(
+            (activity: {
+              id: string;
+              tipo_atividade: string;
+              turno: string;
+            }) => ({
+              id: activity.id,
+              tipo: activity.tipo_atividade,
+              turno: activity.turno,
+            })
+          )
+        );
+        setSelectedActivities(
+          data.map(
+            (activity: {
+              id: string;
+              tipo_atividade: string;
+              turno: string;
+            }) => ({
+              id: activity.id,
+              tipo: activity.tipo_atividade,
+              turno: activity.turno,
+            })
+          )
+        );
       } catch (error) {
         console.error('Error fetching user:', error);
       }
@@ -80,7 +104,31 @@ export function ProfileEventPage() {
     { key: ActivityTypes.PALESTRA, label: 'Palestras', color: 'orange' },
   ];
 
-  const handleChangeActivites = () => {};
+  const handleActivityUpdate = async () => {
+    try {
+      const response = await api.put(
+        `/user/${userData?.uuid_user}/atividades`,
+        {
+          atividadesAntigas: userActivities,
+          atividadesNovas: selectedActivities,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success('Atividades atualizadas com sucesso!');
+        setUserActivities(selectedActivities);
+        refetchActivities();
+      }
+      console.log(response.data);
+    } catch (error) {
+      toast.error('Erro ao atualizar atividades selecionadas');
+    }
+  };
 
   return (
     <>
@@ -108,7 +156,7 @@ export function ProfileEventPage() {
                     </p>
                   </>
                 )}
-                {isFetching ? (
+                {isFetchingUserData ? (
                   <p>Loading...</p>
                 ) : (
                   userData && (
@@ -141,7 +189,7 @@ export function ProfileEventPage() {
                 Informações de pagamento
               </h1>
               <div className="flex justify-between mt-4 space-y-2 text-left w-full">
-                {isFetching ? (
+                {isFetchingUserData ? (
                   <p>Loading...</p>
                 ) : (
                   userData && (
@@ -192,7 +240,7 @@ export function ProfileEventPage() {
                   )
                 )}
               </div>
-              {isFetching ? (
+              {isFetchingUserData ? (
                 <p>Loading...</p>
               ) : (
                 userData.lote &&
@@ -206,107 +254,117 @@ export function ProfileEventPage() {
               )}
             </section>
             <section className="flex flex-col items-center rounded-md border-2 border-gray-200 bg-white p-4 shadow-md w-full">
-              {activities && (
-                <div className="flex w-full flex-col items-center justify-center gap-8 p-4">
-                  <h1 className="text-center text-xl font-bold">Atividades</h1>
-                  {activityTypes.map(({ key, label, color }) => {
-                    const activitiesPerType = activities[key];
-                    const turnos = activitiesPerType
-                      ? Object.entries(activitiesPerType)
-                      : [];
+              {isFetchingActivities && !isRefetchingActivities ? (
+                <p>Loading activities...</p>
+              ) : (
+                activities && (
+                  <div className="flex w-full flex-col items-center justify-center gap-8 p-4">
+                    <h1 className="text-center text-xl font-bold">
+                      Atividades
+                    </h1>
+                    {activityTypes.map(({ key, label, color }) => {
+                      const activitiesPerType = activities[key];
+                      const turnos = activitiesPerType
+                        ? Object.entries(activitiesPerType)
+                        : [];
 
-                    if (turnos.length === 0) return null;
+                      if (turnos.length === 0) return null;
 
-                    return (
-                      <div key={key} className="w-full max-w-3xl space-y-6">
-                        <h2
-                          className={`text-2xl font-semibold text-${color}-600`}
-                        >
-                          {label}
-                        </h2>
+                      return (
+                        <div key={key} className="w-full max-w-3xl space-y-6">
+                          <h2
+                            className={`text-2xl font-semibold text-${color}-600`}
+                          >
+                            {label}
+                          </h2>
 
-                        {turnos.map(([turno, lista]) => {
-                          const handleChange = (selected: string) => {
-                            if (selected === 'none') {
-                              const otherIdsSameTurno =
-                                turnos
-                                  .find(([t]) => t === turno)?.[1]
-                                  .map((a) => a.uuid_atividade) || [];
+                          {turnos.map(([turno, lista]) => {
+                            const handleChange = (selected: string) => {
+                              if (selected === 'none') {
+                                const otherIdsSameTurno =
+                                  turnos
+                                    .find(([t]) => t === turno)?.[1]
+                                    .map((a) => a.uuid_atividade) || [];
 
-                              const updated = selectedActivities.filter(
-                                ({ id }) => !otherIdsSameTurno.includes(id)
+                                const updated = selectedActivities.filter(
+                                  ({ id }) => !otherIdsSameTurno.includes(id)
+                                );
+                                setSelectedActivities(updated);
+                                return;
+                              }
+
+                              const activity = lista.find(
+                                (a) => a.uuid_atividade === selected
                               );
+
+                              const updated = [
+                                ...selectedActivities,
+                                {
+                                  id: activity?.uuid_atividade || '',
+                                  turno,
+                                  tipo: key,
+                                },
+                              ];
                               setSelectedActivities(updated);
-                              return;
-                            }
+                            };
 
-                            const activity = lista.find(
-                              (a) => a.uuid_atividade === selected
-                            );
-
-                            const updated = [
-                              ...selectedActivities,
-                              {
-                                id: activity?.uuid_atividade || '',
-                                turno,
-                                tipo: key,
-                              },
-                            ];
-                            setSelectedActivities(updated);
-                          };
-
-                          return (
-                            <div
-                              key={turno}
-                              className="bg-blue-100 p-4 rounded-md border shadow-sm"
-                            >
-                              <label className="block mb-2 font-medium text-gray-700">
-                                Turno: {turno}
-                              </label>
-                              <Select
-                                value={
-                                  lista.find((a) =>
-                                    userActivities?.some(
-                                      (ua) => ua.id === a.uuid_atividade
-                                    )
-                                  )?.uuid_atividade || 'none'
-                                }
-                                onValueChange={(selected) => {
-                                  handleChange(selected);
-                                }}
+                            return (
+                              <div
+                                key={turno}
+                                className="bg-blue-100 p-4 rounded-md border shadow-sm"
                               >
-                                <SelectTrigger
-                                  className={`w-full rounded border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-${color}-500`}
+                                <label className="block mb-2 font-medium text-gray-700">
+                                  Turno: {turno}
+                                </label>
+                                <Select
+                                  defaultValue={
+                                    lista.find((a) =>
+                                      userActivities?.some(
+                                        (ua) => ua.id === a.uuid_atividade
+                                      )
+                                    )?.uuid_atividade || 'none'
+                                  }
+                                  onValueChange={(selected) => {
+                                    handleChange(selected);
+                                  }}
                                 >
-                                  <SelectValue placeholder="Selecione a atividade" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem
-                                    value="none"
-                                    className="text-slate-900 hover:bg-slate-600"
-                                    disabled={true}
+                                  <SelectTrigger
+                                    className={`w-full rounded border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-${color}-500`}
                                   >
-                                    Nenhuma
-                                  </SelectItem>
-                                  {lista.map((a) => (
+                                    <SelectValue placeholder="Selecione a atividade" />
+                                  </SelectTrigger>
+                                  <SelectContent>
                                     <SelectItem
-                                      className="text-slate-900 hover:bg-slate-200"
-                                      key={a.uuid_atividade}
-                                      value={a.uuid_atividade}
-                                      disabled={true}
+                                      value="none"
+                                      className="text-slate-900 hover:bg-slate-600"
                                     >
-                                      {`${a.nome} [${a._count}/${a.max_participants}]`}
+                                      Nenhuma
                                     </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
+                                    {lista.map((a) => (
+                                      <SelectItem
+                                        className="text-slate-900 hover:bg-slate-200"
+                                        key={a.uuid_atividade}
+                                        value={a.uuid_atividade}
+                                      >
+                                        {`${a.nome} [${a._count}/${a.max_participants}]`}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                    <button
+                      onClick={handleActivityUpdate}
+                      className="mt-4 p-2 bg-blue-500 text-white rounded"
+                    >
+                      Click Me
+                    </button>
+                  </div>
+                )
               )}
             </section>
           </Container>
