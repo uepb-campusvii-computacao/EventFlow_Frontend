@@ -181,29 +181,30 @@ export function Profile() {
       <div className="flex w-full h-[calc(100vh-4rem-1px)]">
         <SideBar.Main items={profileLinks} />
         <Main className="w-full">
-          <Container className="flex flex-col gap-4">
+          <Container className="flex flex-col gap-4 w-full h-full items-center xl:p-16">
             {loading ? (
               <Loader2 className="animate-spin" />
             ) : (
-              <>
+              <div className="flex flex-col gap-6 p-8 border-2 rounded-xl border-gray-400 w-6/12">
+                <h1 className="font-semibold text-5xl">Meu Perfil</h1>
                 <div>
                   <form
                     className="flex flex-col gap-4"
                     onSubmit={handleSubmit(handleUserUpdate)}
                   >
                     <div>
-                      <label htmlFor="nome" className="text-sm font-semibold">
-                        Nome
+                      <label htmlFor="nome" className="text-lg font-normal">
+                        Nome:
                       </label>
                       <Input
                         type="text"
                         id="nome"
                         defaultValue={user?.nome}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-400 rounded-md"
                         {...register('nome')}
                       />
                       {errors.nome && (
-                        <span className="text-red-500 text-sm">
+                        <span className="text-red-500 text-lg">
                           {errors.nome.message}
                         </span>
                       )}
@@ -211,36 +212,36 @@ export function Profile() {
                     <div>
                       <label
                         htmlFor="nome_cracha"
-                        className="text-sm font-semibold"
+                        className="text-lg font-normal"
                       >
-                        Nome de crachá
+                        Nome de crachá:
                       </label>
                       <Input
                         type="text"
                         id="nome_cracha"
                         defaultValue={user?.nome_cracha}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-400 rounded-md"
                         {...register('nome_cracha')}
                       />
                       {errors.nome_cracha && (
-                        <span className="text-red-500 text-sm">
+                        <span className="text-red-500 text-lg">
                           {errors.nome_cracha.message}
                         </span>
                       )}
                     </div>
                     <div>
-                      <label htmlFor="email" className="text-sm font-semibold">
-                        E-mail
+                      <label htmlFor="email" className="text-lg font-normal">
+                        E-mail:
                       </label>
                       <Input
                         type="email"
                         id="email"
                         defaultValue={user?.email}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-400 rounded-md"
                         {...register('email')}
                       />
                       {errors.email && (
-                        <span className="text-red-500 text-sm">
+                        <span className="text-red-500 text-lg">
                           {errors.email.message}
                         </span>
                       )}
@@ -248,19 +249,19 @@ export function Profile() {
                     <div>
                       <label
                         htmlFor="instituicao"
-                        className="text-sm font-semibold"
+                        className="text-lg font-normal"
                       >
-                        Instituição
+                        Instituição:
                       </label>
                       <Input
                         type="text"
                         id="instituicao"
                         defaultValue={user?.instituicao}
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        className="w-full p-2 border border-gray-400 rounded-md"
                         {...register('instituicao')}
                       />
                       {errors.instituicao && (
-                        <span className="text-red-500 text-sm">
+                        <span className="text-red-500 text-lg">
                           {errors.instituicao.message}
                         </span>
                       )}
@@ -268,30 +269,31 @@ export function Profile() {
                     <button
                       disabled={isSubmitting}
                       type="submit"
-                      className="mt-4 flex items-center justify-center rounded-md bg-purple-500 px-3 py-2 text-center text-white transition-colors hover:bg-purple-600 disabled:bg-purple-800"
+                      className="mt-4 self-end w-fit rounded-md bg-purple-500 px-6 py-2 text-center font-semibold text-white transition-colors hover:bg-purple-600 disabled:bg-purple-800"
                     >
-                      {isSubmitting ? 'Atualizando...' : 'Atualizar'}
+                      {isSubmitting ? 'Atualizando...' : 'Editar'}
                     </button>
                   </form>
                 </div>
                 <div>
-                  <form className="flex flex-col gap-4">
-                    <div>
-                      <label htmlFor="cpf" className="text-sm font-semibold">
-                        CPF
-                      </label>
-                      <Input
-                        type="text"
-                        id="cpf"
-                        name="cpf"
-                        value={user?.cpf}
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                        readOnly
-                      />
-                    </div>
-                  </form>
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor="cpf"
+                      className="text-lg text-center font-semibold"
+                    >
+                      CPF:
+                    </label>
+                    <Input
+                      type="text"
+                      id="cpf"
+                      name="cpf"
+                      value={user?.cpf}
+                      className="w-full p-2 text-lg rounded-md"
+                      readOnly
+                    />
+                  </div>
                 </div>
-              </>
+              </div>
             )}
           </Container>
         </Main>

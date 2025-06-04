@@ -10,11 +10,11 @@ export function Wrapper({
   return (
     <nav
       className={twMerge(
-        'flex w-fit h-full min-w-40 bg-neutral-50 rounded-r-sm shadow-md shadow-gray-400',
+        'flex w-fit h-full bg-neutral-50 shadow-md shadow-gray-400',
         className
       )}
     >
-      <ul className="list-none w-full">{children}</ul>
+      <ul className="list-none w-full p-4 space-y-4">{children}</ul>
     </nav>
   );
 }

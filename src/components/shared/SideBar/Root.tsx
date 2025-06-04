@@ -7,7 +7,7 @@ export const SideBar = {
   }: {
     items: {
       to: string;
-      title: string;
+      title?: string;
       icon?: React.ReactNode;
       className?: string;
       titleClassName?: string;
