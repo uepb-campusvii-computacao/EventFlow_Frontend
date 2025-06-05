@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { useEvents } from '@/hooks/useEvents';
 import { profileLinks } from '@/lib/links';
+import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 
 export function ProfileEvents() {
@@ -36,22 +37,25 @@ export function ProfileEvents() {
         <SideBar.Main items={profileLinks} />
         <Main className="w-full">
           <Container className="flex flex-col gap-4">
-            <div className="flex relative items-center">
-              <Input
-                type="text"
-                placeholder="Pesquise o nome do evento"
-                onChange={(e) =>
-                  setSearchQueryName(e.target.value.toLowerCase())
-                }
-                className="focus:!ring-purple-500"
-              />
+            <div className="flex w-fit items-center border m-4 border-gray-400 rounded-lg ">
+              <div className="flex items-center w-fit border-r pr-2 border-gray-400">
+                <Input
+                  type="text"
+                  placeholder="Pesquise o nome do evento"
+                  onChange={(e) =>
+                    setSearchQueryName(e.target.value.toLowerCase())
+                  }
+                  className="border-none w-full min-w-48 focus:!outline-none text-ellipsis"
+                />
+                <SearchIcon className="text-gray-500 scale-75" />
+              </div>
               <Input
                 type="date"
                 placeholder="Data Inicial"
                 onChange={(e) =>
                   setSearchQueryStartDate(new Date(e.target.value))
                 }
-                className="focus:!ring-purple-500"
+                className="border-0 rounded-none !border-r border-gray-400"
               />
               <Input
                 type="date"
@@ -59,7 +63,7 @@ export function ProfileEvents() {
                 onChange={(e) =>
                   setSearchQueryEndDate(new Date(e.target.value))
                 }
-                className="focus:!ring-purple-500"
+                className="border-0 rounded-none !border-r border-gray-400"
               />
               <Select
                 defaultValue="all"
@@ -73,7 +77,7 @@ export function ProfileEvents() {
                   setSearchQueryActive(active[value]);
                 }}
               >
-                <SelectTrigger className="">
+                <SelectTrigger className="border-none">
                   <SelectValue placeholder="Selecione o Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,20 +126,27 @@ export function ProfileEvents() {
                 })
                 .map((data) => {
                   return (
-                    <Card.Wrapper key={data.id}>
+                    <Card.Wrapper
+                      key={data.id}
+                      className="border border-gray-800 rounded-xl"
+                    >
                       <Card.Link to={`/perfil/eventos/${data.slug}`}>
                         <Card.Image src={data.banner} alt={data.nome} />
                         <Card.Body className="flex flex-row justify-between items-start gap-4">
                           <div className="flex flex-col">
-                            <Card.Title title={data.nome} />
+                            <Card.Title
+                              className="capitalize"
+                              title={data.nome}
+                            />
                             <Card.Description
+                              className="text-sm text-gray-500"
                               description={
                                 data.data ? data.data : 'Sem data definida'
                               }
                             />
                           </div>
                           <div
-                            className="rounded-2xl opacity-90 data-[active=true]:bg-green-300 data-[active=true]:text-green-600 font-bold text-center p-2"
+                            className="rounded-2xl opacity-90 data-[active=true]:bg-green-500 font-bold text-center p-2 px-4 data-[active=false]:bg-red-500 text-gray-100 h-fit"
                             data-active={data.ativo}
                           >
                             <p>{data.ativo ? 'Ativo' : 'Terminou'}</p>

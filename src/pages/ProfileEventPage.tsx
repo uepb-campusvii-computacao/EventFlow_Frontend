@@ -3,6 +3,7 @@ import { Container } from '@/components/shared/Container';
 import { Header } from '@/components/shared/Header';
 import { Main } from '@/components/shared/Main';
 import { SideBar } from '@/components/shared/SideBar/Root';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -30,7 +31,6 @@ export function ProfileEventPage() {
     data: activities,
     isFetching: isFetchingActivities,
     refetch: refetchActivities,
-    isRefetching: isRefetchingActivities,
   } = useActivities(findEvent?.uuid_evento || '');
   const { data: userData, isFetching: isFetchingUserData } =
     useUserRegistrationInEvent(findEvent?.uuid_evento);
@@ -46,6 +46,7 @@ export function ProfileEventPage() {
   const [selectedActivities, setSelectedActivities] = useState<
     { id: string; turno: string; tipo: string }[] | []
   >([]);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -106,6 +107,7 @@ export function ProfileEventPage() {
 
   const handleActivityUpdate = async () => {
     try {
+      setUpdating(true);
       const response = await api.put(
         `/user/${userData?.uuid_user}/atividades`,
         {
@@ -127,6 +129,8 @@ export function ProfileEventPage() {
       console.log(response.data);
     } catch (error) {
       toast.error('Erro ao atualizar atividades selecionadas');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -254,7 +258,7 @@ export function ProfileEventPage() {
               )}
             </section>
             <section className="flex flex-col items-center rounded-md border-2 border-gray-200 bg-white p-4 shadow-md w-full">
-              {isFetchingActivities && !isRefetchingActivities ? (
+              {isFetchingActivities ? (
                 <p>Loading activities...</p>
               ) : (
                 activities && (
@@ -307,6 +311,14 @@ export function ProfileEventPage() {
                               ];
                               setSelectedActivities(updated);
                             };
+
+                            console.log(
+                              lista.find((a) =>
+                                userActivities?.some(
+                                  (ua) => ua.id === a.uuid_atividade
+                                )
+                              )?.uuid_atividade || 'none'
+                            );
 
                             return (
                               <div
@@ -364,12 +376,9 @@ export function ProfileEventPage() {
                         </div>
                       );
                     })}
-                    <button
-                      onClick={handleActivityUpdate}
-                      className="mt-4 p-2 bg-blue-500 text-white rounded"
-                    >
-                      Click Me
-                    </button>
+                    <Button onClick={handleActivityUpdate}>
+                      {updating ? 'Atualizando...' : 'Atualizar'}
+                    </Button>
                   </div>
                 )
               )}

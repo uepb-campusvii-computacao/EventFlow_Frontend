@@ -15,6 +15,7 @@ import { api } from '@/lib/api';
 import { profileLinks } from '@/lib/links';
 import { ActivityTypes, Shifts } from '@/types';
 import Cookies from 'js-cookie';
+import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function ProfileActivities() {
@@ -73,24 +74,30 @@ export function ProfileActivities() {
       <div className="flex w-full h-[calc(100vh-4rem-1px)]">
         <SideBar.Main items={profileLinks} />
         <Main className="w-full">
-          <Container className="flex flex-col gap-4 w-full h-full">
-            <div className="flex relative items-center">
-              <Input
-                type="text"
-                placeholder="Pesquise o nome da Atividade"
-                className="focus:!ring-purple-500"
-                onChange={(e) => setSearchQueryName(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Pesquise o nome do Evento"
-                className="focus:!ring-purple-500"
-                onChange={(e) => setSearchQueryEvent(e.target.value)}
-              />
+          <Container className="flex flex-col items-center gap-4 w-full h-full">
+            <div className="flex w-fit items-center border m-4 border-gray-400 rounded-lg">
+              <div className="flex items-center w-fit border-r pr-2 border-gray-400">
+                <Input
+                  type="text"
+                  placeholder="Pesquise o nome da Atividade"
+                  className="border-none w-full min-w-52 focus:!outline-none text-ellipsis"
+                  onChange={(e) => setSearchQueryName(e.target.value)}
+                />
+                <SearchIcon className="text-gray-500 scale-75" />
+              </div>
+              <div className="flex items-center w-fit border-r pr-2 border-gray-400">
+                <Input
+                  type="text"
+                  placeholder="Pesquise o nome do Evento"
+                  className="border-none w-full min-w-48 focus:!outline-none text-ellipsis"
+                  onChange={(e) => setSearchQueryEvent(e.target.value)}
+                />
+                <SearchIcon className="text-gray-500 scale-75" />
+              </div>
               <Input
                 type="date"
                 placeholder="Data Inicial"
-                className="focus:!ring-purple-500"
+                className="border-0 rounded-none !border-r border-gray-400"
                 onChange={(e) =>
                   setSearchQueryDateStart(new Date(e.target.value))
                 }
@@ -98,7 +105,7 @@ export function ProfileActivities() {
               <Input
                 type="date"
                 placeholder="Data Final"
-                className="focus:!ring-purple-500"
+                className="border-0 rounded-none !border-r border-gray-400"
                 onChange={(e) =>
                   setSearchQueryDateEnd(new Date(e.target.value))
                 }
@@ -115,7 +122,7 @@ export function ProfileActivities() {
                   setSearchQueryPresence(isConfirmed[value]);
                 }}
               >
-                <SelectTrigger className="capitalize">
+                <SelectTrigger className="capitalize w-fit gap-2 border-0 border-r rounded-none border-gray-400">
                   <SelectValue placeholder="Selecione o tipo de presença" />
                 </SelectTrigger>
                 <SelectContent>
@@ -141,7 +148,7 @@ export function ProfileActivities() {
                   setSearchQueryType(activities[value]);
                 }}
               >
-                <SelectTrigger className="capitalize">
+                <SelectTrigger className="capitalize w-fit gap-2 border-0 border-r rounded-none border-gray-400">
                   <SelectValue placeholder="Selecione o tipo de Atividade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -170,7 +177,7 @@ export function ProfileActivities() {
                   setSearchQueryShift(shifts[value]);
                 }}
               >
-                <SelectTrigger className="capitalize">
+                <SelectTrigger className="capitalize w-fit gap-2 border-none">
                   <SelectValue placeholder="Selecione o turno" />
                 </SelectTrigger>
                 <SelectContent>
@@ -232,29 +239,37 @@ export function ProfileActivities() {
                     <Card.Wrapper>
                       <Card.Body>
                         <Card.Title
+                          className="capitalize"
                           title={`${activity.nome} - ${activity.turno.toLocaleLowerCase()}`}
                         />
                         <div className="flex gap-2 items-start justify-between">
                           <div className="flex flex-col gap-2">
                             <Card.Description
+                              className="capitalize"
                               description={`Evento: ${activity.evento}`}
                             />
                             <Card.Description
+                              className="capitalize"
                               description={`Tipo: ${activity.tipo_atividade}`}
                             />
                           </div>
                           <div className="flex flex-col gap-2">
                             <Card.Description
+                              className="capitalize"
                               description={`Data: ${activity.data ?? 'Sem data'}`}
                             />
                             <Card.Description
+                              className="capitalize"
                               description={`Presença: ${activity.presenca ? 'Confirmada' : 'Não confirmada'}`}
                             />
                           </div>
                         </div>
-                        <Card.Description
-                          description={`${activity.descricao}`}
-                        />
+                        <div className="flex flex-col mt-2">
+                          <Card.Description
+                            className="mt-2"
+                            description={`${activity.descricao}`}
+                          />
+                        </div>
                       </Card.Body>
                     </Card.Wrapper>
                   ))}

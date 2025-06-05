@@ -18,7 +18,7 @@ export function Wrapper({ children, className }: CardWrapperProps) {
   return (
     <div
       className={twMerge(
-        'flex h-fit flex-col overflow-hidden rounded-md border shadow-md ',
+        'flex h-fit w-[512px] flex-col overflow-hidden rounded-md border shadow-md hover:scale-105 transition-transform duration-200 ease-in-out',
         className
       )}
     >
